@@ -26,65 +26,77 @@ on systems that do not support them.
     -   [Trees](#trees)
 -   [License](#license)
 
-Installation
-------------
+---
+
+# Installation
+
+Install the stable version from CRAN:
 
 ``` r
-devtools::install_github("r-lib/cli")
+install.packages("cli")
 ```
 
-Usage
------
+Install the development version from GitHub:
+
+``` r
+source("https://install-github.me/r-lib/cli")
+```
+
+# Usage
 
 ``` r
 library(cli)
 ```
 
-### Unicode characters
+## Unicode characters
 
-Inspired by (and mostly copied from) the [figures](https://github.com/sindresorhus/figures) JavaScript project.
+Inspired by (and mostly copied from) the
+[figures](https://github.com/sindresorhus/figures) JavaScript project.
 
-    #> ✔    tick                      ☒ checkbox_on            
-    #> ✖    cross                     ☐ checkbox_off           
-    #> ★    star                      ⓧ checkbox_circle_on     
-    #> ▇    square                    Ⓘ checkbox_circle_off    
-    #> ◻    square_small              ❓ fancy_question_mark    
-    #> ◼    square_small_filled       ≠ neq                    
-    #> ◯    circle                    ≥ geq                    
-    #> ◉    circle_filled             ≤ leq                    
-    #> ◌    circle_dotted             × times                  
-    #> ◎    circle_double             ▔ upper_block_1          
-    #> ⓞ    circle_circle             ▀ upper_block_4          
-    #> ⓧ    circle_cross              ▁ lower_block_1          
-    #> Ⓘ    circle_pipe               ▂ lower_block_2          
-    #> ?⃝   circle_question_mark      ▃ lower_block_3          
-    #> ●    bullet                    ▄ lower_block_4          
-    #> ․    dot                       ▅ lower_block_5          
-    #> ─    line                      ▆ lower_block_6          
-    #> ═    double_line               ▇ lower_block_7          
-    #> …    ellipsis                  █ lower_block_8          
-    #> …    continue                  █ full_block             
-    #> ❯    pointer                   ⁰ sup_0                  
-    #> ℹ    info                      ¹ sup_1                  
-    #> ⚠    warning                   ² sup_2                  
-    #> ☰    menu                      ³ sup_3                  
-    #> ☺    smiley                    ⁴ sup_4                  
-    #> ෴    mustache                  ⁵ sup_5                  
-    #> ♥    heart                     ⁶ sup_6                  
-    #> ↑    arrow_up                  ⁷ sup_7                  
-    #> ↓    arrow_down                ⁸ sup_8                  
-    #> ←    arrow_left                ⁹ sup_9                  
-    #> →    arrow_right               ⁻ sup_minus              
-    #> ◉    radio_on                  ⁺ sup_plus               
-    #> ◯    radio_off
+    #> ✔    tick                      ☐ checkbox_off           
+    #> ✖    cross                     ⓧ checkbox_circle_on     
+    #> ★    star                      Ⓘ checkbox_circle_off    
+    #> ▇    square                    ❓ fancy_question_mark    
+    #> ◻    square_small              ≠ neq                    
+    #> ◼    square_small_filled       ≥ geq                    
+    #> ◯    circle                    ≤ leq                    
+    #> ◉    circle_filled             × times                  
+    #> ◌    circle_dotted             ▔ upper_block_1          
+    #> ◎    circle_double             ▀ upper_block_4          
+    #> ⓞ    circle_circle             ▁ lower_block_1          
+    #> ⓧ    circle_cross              ▂ lower_block_2          
+    #> Ⓘ    circle_pipe               ▃ lower_block_3          
+    #> ?⃝   circle_question_mark      ▄ lower_block_4          
+    #> ●    bullet                    ▅ lower_block_5          
+    #> ․    dot                       ▆ lower_block_6          
+    #> ─    line                      ▇ lower_block_7          
+    #> ═    double_line               █ lower_block_8          
+    #> …    ellipsis                  █ full_block             
+    #> …    continue                  ⁰ sup_0                  
+    #> ❯    pointer                   ¹ sup_1                  
+    #> ℹ    info                      ² sup_2                  
+    #> ⚠    warning                   ³ sup_3                  
+    #> ☰    menu                      ⁴ sup_4                  
+    #> ☺    smiley                    ⁵ sup_5                  
+    #> ෴    mustache                  ⁶ sup_6                  
+    #> ♥    heart                     ⁷ sup_7                  
+    #> ↑    arrow_up                  ⁸ sup_8                  
+    #> ↓    arrow_down                ⁹ sup_9                  
+    #> ←    arrow_left                ⁻ sup_minus              
+    #> →    arrow_right               ⁺ sup_plus               
+    #> ◉    radio_on                  ▶ play                   
+    #> ◯    radio_off                 ■ stop                   
+    #> ☒    checkbox_on               ● record
 
-### Spinners
+## Spinners
 
-See `list_spinners()` and `get_spinner()`. From the awesome [cli-spinners](https://github.com/sindresorhus/cli-spinners#readme) project.
+See `list_spinners()` and `get_spinner()`. From the awesome
+[cli-spinners](https://github.com/sindresorhus/cli-spinners#readme)
+project.
 
 ![](man/figures/spinners.gif)
 
-### Rules
+## Rules
 
 Simple rule
 
@@ -92,7 +104,7 @@ Simple rule
 rule()
 ```
 
-![](man/figures/rule-1.png)
+![](man/figures/rule-1.png)<!-- -->
 
 Double rule
 
@@ -100,7 +112,7 @@ Double rule
 rule(line = 2)
 ```
 
-![](man/figures/rule-double-1.png)
+![](man/figures/rule-double-1.png)<!-- -->
 
 Bars
 
@@ -108,13 +120,13 @@ Bars
 rule(line = "bar2")
 ```
 
-![](man/figures/rule-bars-1.png)
+![](man/figures/rule-bars-1.png)<!-- -->
 
 ``` r
 rule(line = "bar5")
 ```
 
-![](man/figures/rule-bars-2.png)
+![](man/figures/rule-bars-2.png)<!-- -->
 
 Left label
 
@@ -122,7 +134,7 @@ Left label
 rule(left = "Results")
 ```
 
-![](man/figures/rule-left-1.png)
+![](man/figures/rule-left-1.png)<!-- -->
 
 Centered label
 
@@ -130,7 +142,7 @@ Centered label
 rule(center = " * RESULTS * ")
 ```
 
-![](man/figures/rule-center-1.png)
+![](man/figures/rule-center-1.png)<!-- -->
 
 Colored labels
 
@@ -138,7 +150,7 @@ Colored labels
 rule(center = crayon::red(" * RESULTS * "))
 ```
 
-![](man/figures/rule-color-label-1.png)
+![](man/figures/rule-color-label-1.png)<!-- -->
 
 Colored label and line
 
@@ -146,7 +158,7 @@ Colored label and line
 rule(center = " * RESULTS * ", col = "red")
 ```
 
-![](man/figures/rule-color-1.png)
+![](man/figures/rule-color-1.png)<!-- -->
 
 Colored line
 
@@ -154,7 +166,7 @@ Colored line
 rule(center = " * RESULTS * ", line_col = "red")
 ```
 
-![](man/figures/rule-color-line-1.png)
+![](man/figures/rule-color-line-1.png)<!-- -->
 
 Custom line
 
@@ -162,7 +174,7 @@ Custom line
 rule(center = "TITLE", line = "~")
 ```
 
-![](man/figures/rule-line-custom-1.png)
+![](man/figures/rule-line-custom-1.png)<!-- -->
 
 More custom line
 
@@ -170,18 +182,19 @@ More custom line
 rule(center = "TITLE", line = "~-", line_col = "blue")
 ```
 
-![](man/figures/rule-line-custom-2-1.png)
+![](man/figures/rule-line-custom-2-1.png)<!-- -->
 
-Even more custom line
+Even more custom
+line
 
 ``` r
 rule(center = crayon::bgRed(" ", symbol$star, "TITLE", symbol$star, " "),
   line = "\u2582", line_col = "orange")
 ```
 
-![](man/figures/rule-line-custom-3-1.png)
+![](man/figures/rule-line-custom-3-1.png)<!-- -->
 
-### Boxes
+## Boxes
 
 Default box
 
@@ -189,7 +202,7 @@ Default box
 boxx("Hello there!")
 ```
 
-![](man/figures/box-1.png)
+![](man/figures/box-1.png)<!-- -->
 
 Change border style
 
@@ -197,7 +210,7 @@ Change border style
 boxx("Hello there!", border_style = "double")
 ```
 
-![](man/figures/box-border-style-1.png)
+![](man/figures/box-border-style-1.png)<!-- -->
 
 Multiple lines
 
@@ -205,7 +218,7 @@ Multiple lines
 boxx(c("Hello", "there!"), padding = 1)
 ```
 
-![](man/figures/box-lines-1.png)
+![](man/figures/box-lines-1.png)<!-- -->
 
 Padding
 
@@ -213,13 +226,13 @@ Padding
 boxx("Hello there!", padding = 1)
 ```
 
-![](man/figures/box-padding-1.png)
+![](man/figures/box-padding-1.png)<!-- -->
 
 ``` r
 boxx("Hello there!", padding = c(1, 5, 1, 5))
 ```
 
-![](man/figures/box-padding-2.png)
+![](man/figures/box-padding-2.png)<!-- -->
 
 Margin
 
@@ -227,19 +240,19 @@ Margin
 boxx("Hello there!", margin = 1)
 ```
 
-![](man/figures/box-margin-1.png)
+![](man/figures/box-margin-1.png)<!-- -->
 
 ``` r
 boxx("Hello there!", margin = c(1, 5, 1, 5))
 ```
 
-![](man/figures/box-margin-2.png)
+![](man/figures/box-margin-2.png)<!-- -->
 
 ``` r
 boxx("Hello there!", padding = 1, margin = c(1, 5, 1, 5))
 ```
 
-![](man/figures/box-margin-3.png)
+![](man/figures/box-margin-3.png)<!-- -->
 
 Floating
 
@@ -247,13 +260,13 @@ Floating
 boxx("Hello there!", padding = 1, float = "center")
 ```
 
-![](man/figures/box-floating-1.png)
+![](man/figures/box-floating-1.png)<!-- -->
 
 ``` r
 boxx("Hello there!", padding = 1, float = "right")
 ```
 
-![](man/figures/box-floating-2.png)
+![](man/figures/box-floating-2.png)<!-- -->
 
 Text color
 
@@ -261,7 +274,7 @@ Text color
 boxx(crayon::cyan("Hello there!"), padding = 1, float = "center")
 ```
 
-![](man/figures/box-color-1.png)
+![](man/figures/box-color-1.png)<!-- -->
 
 Backgorund color
 
@@ -269,13 +282,13 @@ Backgorund color
 boxx("Hello there!", padding = 1, background_col = "brown")
 ```
 
-![](man/figures/box-bgcolor-1.png)
+![](man/figures/box-bgcolor-1.png)<!-- -->
 
 ``` r
 boxx("Hello there!", padding = 1, background_col = crayon::bgRed)
 ```
 
-![](man/figures/box-bgcolor-2.png)
+![](man/figures/box-bgcolor-2.png)<!-- -->
 
 Border color
 
@@ -283,13 +296,13 @@ Border color
 boxx("Hello there!", padding = 1, border_col = "green")
 ```
 
-![](man/figures/box-border-color-1.png)
+![](man/figures/box-border-color-1.png)<!-- -->
 
 ``` r
 boxx("Hello there!", padding = 1, border_col = crayon::red)
 ```
 
-![](man/figures/box-border-color-2.png)
+![](man/figures/box-border-color-2.png)<!-- -->
 
 Label alignment
 
@@ -297,19 +310,19 @@ Label alignment
 boxx(c("Hi", "there", "you!"), padding = 1, align = "left")
 ```
 
-![](man/figures/box-label-align-1.png)
+![](man/figures/box-label-align-1.png)<!-- -->
 
 ``` r
 boxx(c("Hi", "there", "you!"), padding = 1, align = "center")
 ```
 
-![](man/figures/box-label-align-2.png)
+![](man/figures/box-label-align-2.png)<!-- -->
 
 ``` r
 boxx(c("Hi", "there", "you!"), padding = 1, align = "right")
 ```
 
-![](man/figures/box-label-align-3.png)
+![](man/figures/box-label-align-3.png)<!-- -->
 
 A very customized box
 
@@ -326,11 +339,12 @@ boxx(
 )
 ```
 
-![](man/figures/box-customized-1.png)
+![](man/figures/box-customized-1.png)<!-- -->
 
-### Trees
+## Trees
 
-You can specify the tree with a two column data frame, containing the node ids/labels, and the list of their children.
+You can specify the tree with a two column data frame, containing the
+node ids/labels, and the list of their children.
 
 ``` r
 data <- data.frame(
@@ -354,9 +368,10 @@ data <- data.frame(
 tree(data, root = "rcmdcheck")
 ```
 
-![](man/figures/tree-1.png)
+![](man/figures/tree-1.png)<!-- -->
 
-An optional third column may contain custom labels. These can be colored as well:
+An optional third column may contain custom labels. These can be colored
+as well:
 
 ``` r
 data$label <- paste(data$package,
@@ -370,9 +385,8 @@ data$label[roots] <- crayon::cyan(crayon::italic(data$label[roots]))
 tree(data, root = "rcmdcheck")
 ```
 
-![](man/figures/tree-color-1.png)
+![](man/figures/tree-color-1.png)<!-- -->
 
-License
--------
+# License
 
 MIT © RStudio

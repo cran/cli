@@ -1,4 +1,3 @@
-
 #' Various handy symbols to use in a command line UI
 #'
 #' @usage
@@ -15,25 +14,12 @@
 #' @export symbol
 #'
 #' @examples
-#' cat(symbol$check, " SUCCESS\n", symbol$cross, " FAILURE\n", sep="")
+#' cat(symbol$tick, " SUCCESS\n", symbol$cross, " FAILURE\n", sep = "")
 #'
 #' ## All symbols
-#' cat(paste(format(names(symbol), width=20),
+#' cat(paste(format(names(symbol), width = 20),
 #'   unlist(symbol)), sep = "\n")
 NULL
-
-dummy <- function() { }
-
-## nocov start
-.onLoad <- function(libname, pkgname) {
-  pkgenv <- environment(dummy)
-  makeActiveBinding(
-    "symbol",
-    function() if (is_utf8_output()) symbol_utf8 else symbol_win,
-    pkgenv
-  )
-}
-## nocov end
 
 symbol_utf8 <- list(
   "tick" = '\u2714',
@@ -105,7 +91,11 @@ symbol_utf8 <- list(
   "sup_9" = "\u2079",
 
   "sup_minus" = "\u207b",
-  "sup_plus" = "\u207a"
+  "sup_plus" = "\u207a",
+
+  "play" = "\u25b6",
+  "stop" = "\u25a0",
+  "record" = "\u25cf"
 )
 
 symbol_win <- list(
@@ -178,5 +168,86 @@ symbol_win <- list(
   "sup_9" = "9",
 
   "sup_minus" = "-",
-  "sup_plus" = "+"
+  "sup_plus" = "+",
+
+  "play" = ">",
+  "stop" = "#",
+  "record" = "o"
+)
+
+symbol_ascii <- list(
+  "tick" = 'v',
+  "cross" = 'x',
+  "star" = '*',
+  "square" = '[ ]',
+  "square_small" = '[ ]',
+  "square_small_filled" = '[x]',
+  "circle" = '( )',
+  "circle_filled" = '(*)',
+  "circle_dotted" = '( )',
+  "circle_double" = '(o)',
+  "circle_circle" = '(o)',
+  "circle_cross" = '(x)',
+  "circle_pipe" = '(|)',
+  "circle_question_mark" = '(?)',
+  "bullet" = '*',
+  "dot" = '.',
+  "line" = '-',
+  "double_line" = "=",
+  "ellipsis" = '...',
+  "continue" = '~',
+  "pointer" = '>',
+  "info" = 'i',
+  "warning" = '!',
+  "menu" = '=',
+  "smiley" = ':)',
+  "mustache" = '/\\/',
+  "heart" = '<3',
+  "arrow_up" = '^',
+  "arrow_down" = 'v',
+  "arrow_left" = '<',
+  "arrow_right" = '>',
+  "radio_on" = '(*)',
+  "radio_off" = '( )',
+  "checkbox_on" = '[x]',
+  "checkbox_off" = '[ ]',
+  "checkbox_circle_on" = '(x)',
+  "checkbox_circle_off" = '( )',
+  "fancy_question_mark" = "(?)",
+  "neq" = "!=",
+  "geq" = ">=",
+  "leq" = "<=",
+  "times" = "x",
+
+  "upper_block_1" = "^",
+  "upper_block_4" = "^",
+
+  "lower_block_1" = ".",
+  "lower_block_2" = "_",
+  "lower_block_3" = "_",
+  "lower_block_4" = "=",
+  "lower_block_5" = "=",
+  "lower_block_6" = "*",
+  "lower_block_7" = "#",
+  "lower_block_8" = "#",
+
+  "full_block" = "#",
+
+  "sup_0" = "0",
+  "sup_1" = "1",
+  "sup_2" = "2",
+  "sup_3" = "3",
+  "sup_4" = "4",
+  "sup_5" = "5",
+  "sup_6" = "6",
+  "sup_7" = "7",
+  "sup_8" = "8",
+  "sup_9" = "9",
+
+  "sup_minus" = "-",
+  "sup_plus" = "+",
+
+  "play" = ">",
+  "stop" = "#",
+  "record" = "o"
 )
