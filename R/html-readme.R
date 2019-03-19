@@ -3,15 +3,16 @@ knit_print.html <- function(x, zoom = 2, ...) {
   x <- paste(x, collapse = "\n")
   html <- html_page(fansi::sgr_to_html(x))
   html_file <- tempfile(fileext = ".html")
-  font_file <- file.path(dirname(html_file), "Menlo-Regular.ttf")
-  file.copy(
-    system.file(package = "cli", "Menlo-Regular.ttf"),
-    font_file
-  )
-  on.exit(unlink(c(html_file, font_file)), add = TRUE)
+  on.exit(unlink(html_file), add = TRUE)
   image_file <- tempfile(fileext = ".png")
+  font_file <- file.path(tempdir(), "Menlo-Regular.ttf")
   on.exit(unlink(image_file), add = TRUE)
   cat(html, file = html_file)
+  if (!file.exists(font_file)) {
+    utils::download.file(
+      "https://cdn.jsdelivr.net/gh/r-lib/cli@master/tools/Menlo-Regular.ttf",
+      font_file)
+  }
   webshot::webshot(html_file, image_file, selector = "#content",
                    zoom = zoom)
   img <- readBin(image_file, "raw", file.info(image_file)[, "size"])
