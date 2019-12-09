@@ -100,16 +100,16 @@ line. These all use the crayon package under the hood, but provide a
 slightly simpler interface.
 }
 \details{
-The \code{col_*} functions change the (foreground) color to the text.
+The \verb{col_*} functions change the (foreground) color to the text.
 These are the eight original ANSI colors. Note that in some terminals,
 they might actually look differently, as terminals have their own
 settings for how to show them.
 
-The \code{bg_*} functions change the background color of the text.
+The \verb{bg_*} functions change the background color of the text.
 These are the eight original ANSI background colors. These, too, can
 vary in appearence, depending on terminal settings.
 
-The \code{style_*} functions apply other styling to the text. The currently
+The \verb{style_*} functions apply other styling to the text. The currently
 supported styling funtions are:
 \itemize{
 \item \code{style_reset()} to remove any style, including color,
@@ -134,7 +134,7 @@ col_blue("Hello ", "world!")
 cat(col_blue("Hello ", "world!"))
 
 cat("... to highlight the", col_red("search term"),
-    "in a block of text\\n")
+    "in a block of text\n")
 
 ## Style stack properly
 cat(col_green(
@@ -146,13 +146,14 @@ cat(col_green(
 error <- combine_ansi_styles("red", "bold")
 warn <- combine_ansi_styles("magenta", "underline")
 note <- col_cyan
-cat(error("Error: subscript out of bounds!\\n"))
-cat(warn("Warning: shorter argument was recycled.\\n"))
-cat(note("Note: no such directory.\\n"))
+cat(error("Error: subscript out of bounds!\n"))
+cat(warn("Warning: shorter argument was recycled.\n"))
+cat(note("Note: no such directory.\n"))
 
 }
 \seealso{
-Other ANSI styling: \code{\link{combine_ansi_styles}},
-  \code{\link{make_ansi_style}}
+Other ANSI styling: 
+\code{\link{combine_ansi_styles}()},
+\code{\link{make_ansi_style}()}
 }
 \concept{ANSI styling}

@@ -29,20 +29,21 @@ e.g. background color, foreground color, bold font.
 \examples{
 ## Use style names
 alert <- combine_ansi_styles("bold", "red4")
-cat(alert("Warning!"), "\\n")
+cat(alert("Warning!"), "\n")
 
 ## Or style functions
 alert <- combine_ansi_styles(style_bold, col_red, bg_cyan)
-cat(alert("Warning!"), "\\n")
+cat(alert("Warning!"), "\n")
 
 ## Combine a composite style
 alert <- combine_ansi_styles(
   "bold",
   combine_ansi_styles("red", bg_cyan))
-cat(alert("Warning!"), "\\n")
+cat(alert("Warning!"), "\n")
 }
 \seealso{
-Other ANSI styling: \code{\link{ansi-styles}},
-  \code{\link{make_ansi_style}}
+Other ANSI styling: 
+\code{\link{ansi-styles}},
+\code{\link{make_ansi_style}()}
 }
 \concept{ANSI styling}

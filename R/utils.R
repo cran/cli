@@ -1,6 +1,10 @@
 
 `%||%` <- function(l, r) if (is.null(l)) r else l
 
+new_class <- function(class_name, ...) {
+  structure(as.environment(list(...)), class = class_name)
+}
+
 make_space <- function(len) {
   strrep(" ", len)
 }
@@ -105,10 +109,41 @@ new_uuid <- (function() {
   cnt <- 0
   function() {
     cnt <<- cnt + 1
-    paste0("cli", cnt)
+    paste0("cli-", clienv$pid, "-", cnt)
   }
 })()
 
 na.omit <- function(x) {
   if (is.atomic(x)) x[!is.na(x)] else x
+}
+
+last <- function(x) {
+  tail(x, 1)[[1]]
+}
+
+str_tail <- function(x) {
+  substr(x, 2, nchar(x))
+}
+
+push <- function(l, el, name = NULL) {
+  c(l, structure(list(el), names = name))
+}
+
+try_silently <- function(expr) {
+  suppressWarnings(tryCatch(expr, error = function(x) x))
+}
+
+random_id <- function() {
+  paste(sample(c(letters, LETTERS, 0:9), 7, replace = TRUE), collapse = "")
+}
+
+str_trim <- function(x) {
+  sub("^\\s+", "", sub("\\s+$", "", x))
+}
+
+has_asciicast_support <- function() {
+ tryCatch({
+   asNamespace("asciicast")$is_recording_supported() &&
+     asNamespace("asciicast")$is_svg_supported()
+ }, error = function(e) FALSE)
 }

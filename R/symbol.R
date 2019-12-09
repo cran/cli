@@ -9,6 +9,8 @@
 #'
 #' On Windows they have a fallback to less fancy symbols.
 #'
+#' `list_symbols()` prints a table with all symbols to the screen.
+#'
 #' @name symbol
 #' @aliases symbol
 #' @export symbol
@@ -99,8 +101,32 @@ symbol_utf8 <- list(
 
   "figure_dash" = "\u2012",
   "en_dash" = "\u2013",
-  "em_dash" = "\u2014"
+  "em_dash" = "\u2014",
+
+  "dquote_left" = "\u201c",
+  "dquote_right" = "\u201d",
+  "squote_left" = "\u2018",
+  "squote_right" = "\u2019"
 )
+
+symbol_rstudio <- symbol_utf8
+symbol_rstudio$tick <- "\u2713"
+symbol_rstudio$cross <- "x"
+symbol_rstudio$star <- "\u066d"
+symbol_rstudio$square # ???
+symbol_rstudio$square_small # ???
+symbol_rstudio$suare_small_filled # ???
+symbol_rstudio$circle_circle # ???
+symbol_rstudio$circle_cross # ???
+symbol_rstudio$circle_pipe # ???
+symbol_rstudio$circle_question_mark # ???
+symbol_rstudio$pointer <- ">"
+symbol_rstudio$warning <- "!"
+symbol_rstudio$menu # ???
+symbol_rstudio$mustache # ???
+symbol_rstudio$checkbox_circle_on # ???
+symbol_rstudio$checkbox_circle_off # ???
+symbol_rstudio$fancy_question_mark # ???
 
 symbol_win <- list(
   "tick" = '\u221A',
@@ -180,7 +206,12 @@ symbol_win <- list(
 
   "figure_dash" = "-",
   "en_dash" = "--",
-  "em_dash" = "---"
+  "em_dash" = "---",
+
+  "dquote_left" = "\"",
+  "dquote_right" = "\"",
+  "squote_left" = "'",
+  "squote_right" = "'"
 )
 
 symbol_ascii <- list(
@@ -261,5 +292,27 @@ symbol_ascii <- list(
 
   "figure_dash" = "-",
   "en_dash" = "--",
-  "em_dash" = "---"
+  "em_dash" = "---",
+
+  "dquote_left" = "\"",
+  "dquote_right" = "\"",
+  "squote_left" = "'",
+  "squote_right" = "'"
 )
+
+#' @export
+#' @rdname symbol
+
+list_symbols <- function() {
+  rpad <- function(x, width) {
+    w <- nchar(x, type = "width")
+    paste0(x, strrep(" ", width - w))
+  }
+  chars <- rpad(paste0(symbol, "\t", names(symbol)), 25)
+  if (length(chars) %% 2) chars <- c(chars, "")
+  chars <- paste(
+  sep = "   ",
+  chars[1:(length(chars)/2)],
+  chars[(length(chars)/2 + 1):length(chars)])
+  cat(chars, sep = "\n")
+}

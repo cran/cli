@@ -2,9 +2,9 @@
 % Please edit documentation in R/tty.R
 \name{is_dynamic_tty}
 \alias{is_dynamic_tty}
-\title{Detect whether a stream supports \code{\\r} (Carriage return)}
+\title{Detect whether a stream supports \verb{\\\\r} (Carriage return)}
 \usage{
-is_dynamic_tty(stream = stderr())
+is_dynamic_tty(stream = cli_output_connection())
 }
 \arguments{
 \item{stream}{The stream to inspect, an R connection object.
@@ -12,14 +12,14 @@ Note that it defaults to the standard \emph{error} stream, since
 informative messages are typically printed there.}
 }
 \description{
-In a terminal, \code{\\r} moves the cursor to the first position of the
-same line. It is also supported by most R IDEs. \code{\\r} is typically
+In a terminal, \verb{\\\\r} moves the cursor to the first position of the
+same line. It is also supported by most R IDEs. \verb{\\\\r} is typically
 used to achive a more dynamic, less cluttered user interface, e.g.
 to create progress bars.
 }
 \details{
-If the output is directed to a file, then \code{\\r} characters are typically
-unwanted. This function detects if \code{\\r} can be used for the given
+If the output is directed to a file, then \verb{\\\\r} characters are typically
+unwanted. This function detects if \verb{\\\\r} can be used for the given
 stream or not.
 
 The detection mechanism is as follows:
@@ -32,7 +32,7 @@ the string \code{"true"}, \code{"TRUE"} or \code{"True"}, \code{TRUE} is returne
 \item If \code{R_CLI_DYNAMIC} is not empty and set to anything else, \code{FALSE} is
 returned.
 \item If the stream is a terminal, then \code{TRUE} is returned.
-\item If the stream is hte standard output or error within RStudio,
+\item If the stream is the standard output or error within RStudio,
 the macOS R app, or RKWard IDE, \code{TRUE} is returned.
 \item Otherwise \code{FALSE} is returned.
 }
@@ -42,6 +42,7 @@ is_dynamic_tty()
 is_dynamic_tty(stdout())
 }
 \seealso{
-Other terminal capabilities: \code{\link{is_ansi_tty}}
+Other terminal capabilities: 
+\code{\link{is_ansi_tty}()}
 }
 \concept{terminal capabilities}
