@@ -176,34 +176,16 @@ theme_function <- function(dark) {
 }
 
 format_r_code <- function(dark) {
-  fun <- format_code(dark)
   function(x) {
     x <- crayon::strip_style(x)
     lines <- strsplit(x, "\n", fixed = TRUE)[[1]]
-    code <- tryCatch(prettycode::highlight(lines), error = function(x) lines)
-    fun(code)
+    tryCatch(prettycode::highlight(lines), error = function(x) lines)
   }
 }
 
 format_code <- function(dark) {
-  dark <- dark
-  style <- if (dark) {
-    crayon::combine_styles(
-      crayon::make_style("#232323", bg = TRUE),
-      crayon::make_style("#d0d0d0")
-    )
-  } else {
-    crayon::combine_styles(
-      crayon::make_style("#e8e8e8", bg = TRUE),
-      crayon::make_style("#202020")
-    )
-  }
   function(x) {
-    lines <- c("", unlist(strsplit(x, "\n", fixed = TRUE)), "")
-    len <- fansi::nchar_ctl(lines)
-    width <- console_width()
-    padded <- paste0(" ", lines, strrep(" ", width - len), " ")
-    style(padded)
+    unlist(strsplit(x, "\n", fixed = TRUE))
   }
 }
 
