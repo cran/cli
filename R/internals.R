@@ -1,10 +1,8 @@
 
-#' @importFrom fansi strwrap_ctl
-
 clii__xtext <- function(app, text, .list, indent, padding) {
   style <- app$get_current_style()
   text <- app$inline(text, .list = .list)
-  text <- strwrap_ctl(text, width = app$get_width(extra = padding))
+  text <- strwrap_fixed(text, width = app$get_width(extra = padding))
 
   text[1] <- paste0(style$before, text[1])
   text[length(text)] <- paste0(text[length(text)], style$after)
@@ -62,11 +60,7 @@ clii__vspace <- function(app, n) {
   }
 }
 
-clii__message <- function(..., domain = NULL, appendLF = TRUE,
-                          output = stderr()) {
-
-  msg <- .makeMessage(..., domain = domain, appendLF = appendLF)
-
+get_real_output <- function(output) {
   if (! inherits(output, "connection")) {
     output <- switch(
       output,
@@ -76,6 +70,14 @@ clii__message <- function(..., domain = NULL, appendLF = TRUE,
       "stdout" = stdout()
     )
   }
+  output
+}
+
+clii__message <- function(..., domain = NULL, appendLF = TRUE,
+                          output = stderr()) {
+
+  msg <- .makeMessage(..., domain = domain, appendLF = appendLF)
+  output <- get_real_output(output)
 
   withRestarts(muffleMessage = function() NULL, {
     signalCondition(simpleMessage(msg))

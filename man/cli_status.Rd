@@ -63,7 +63,7 @@ again. cli automates much of this, via the \code{msg_done}, \code{msg_failed}, a
 }
 \seealso{
 \link{cli_process_start} for a higher level interface to the
-startus bar, that adds automatic styling.
+status bar, that adds automatic styling.
 
 Other status bar: 
 \code{\link{cli_process_start}()},

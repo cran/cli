@@ -38,7 +38,7 @@
 #' @return The id of the new status bar container element, invisibly.
 #'
 #' @seealso [cli_process_start] for a higher level interface to the
-#'   startus bar, that adds automatic styling.
+#'   status bar, that adds automatic styling.
 #' @family status bar
 #' @export
 
@@ -129,7 +129,7 @@ cli_status_update <- function(id = NULL, msg = NULL, msg_done = NULL,
 #'
 #' Typically you call `cli_process_start()` to start the process, and then
 #' `cli_process_done()` when it is done. If an error happens before
-#' `cli_process_fone()` is called, then cli automatically shows the message
+#' `cli_process_done()` is called, then cli automatically shows the message
 #' for unsuccessful termination.
 #'
 #' If you handle the errors of the process or computation, then you can do
@@ -141,13 +141,13 @@ cli_status_update <- function(id = NULL, msg = NULL, msg_done = NULL,
 #' See examples below.
 #'
 #' @param msg The message to show to indicate the start of the process or
-#'   compuration. It will be collapsed into a single string, and the first
+#'   computation. It will be collapsed into a single string, and the first
 #'   line is kept and cut to [console_width()].
 #' @param msg_done The message to use for successful termination.
 #' @param msg_failed The message to use for unsuccessful termination.
 #' @param on_exit Whether this process should fail or terminate
 #'   successfully when the calling function (or the environment in `.envir`)
-#'   exits.x
+#'   exits.
 #' @param msg_class The style class to add to the message. Use an empty
 #'   string to suppress styling.
 #' @param done_class The style class to add to the successful termination
@@ -246,15 +246,8 @@ cli_process_failed <- function(id = NULL, msg = NULL, msg_failed = NULL,
 
 clii_status <- function(app, id, msg, msg_done, msg_failed, keep,
                         auto_result) {
-  bar_app <- cliapp(
-    theme = NULL,
-    user_theme = NULL,
-    output = app$output
-  )
-  bar_app$themes <- app$themes
-  clii__container_start(bar_app, "div", class = "statusbar", id = id)
+
   app$status_bar[[id]] <- list(
-    app = bar_app,
     content = "",
     msg_done = msg_done,
     msg_failed = msg_failed,
@@ -312,8 +305,6 @@ clii_status_clear <- function(app, id, result, msg_done, msg_failed) {
   if (length(app$status_bar)) app$cat(paste0(app$status_bar[[1]]$content))
 }
 
-#' @importFrom fansi substr_ctl
-
 clii_status_update <- function(app, id, msg, msg_done, msg_failed) {
   ## If NA then the most recent one
   if (is.na(id)) id <- names(app$status_bar)[1]
@@ -328,20 +319,15 @@ clii_status_update <- function(app, id, msg, msg_done, msg_failed) {
   ## Do we have a new message?
   if (is.null(msg)) return(invisible())
 
-  ## Otherwise clear line
-  if (length(app$status_bar)) clii__clear_status_bar(app)
+  ## Do we need to clear the current content?
+  current <- paste0("", app$status_bar[[1]]$content)
 
   ## Format the line
   content <- ""
-  withCallingHandlers(
-    app$status_bar[[id]]$app$xtext(msg),
-    message = function(msg) {
-      content <<- paste0(content, msg$message)
-      invokeRestart("muffleMessage")
-    }
-  )
-
-  content <- strsplit(content, "\r?\n")[[1]][1]
+  fmsg <- app$inline(msg)
+  cfmsg <- strwrap2_fixed(fmsg, width = app$get_width(), strip.spaces = FALSE)
+  content <- strsplit(cfmsg, "\r?\n")[[1]][1]
+  if (is.na(content)) content <- ""
 
   ## Update status bar, put it in front
   app$status_bar[[id]]$content <- content
@@ -349,15 +335,25 @@ clii_status_update <- function(app, id, msg, msg_done, msg_failed) {
     app$status_bar[id],
     app$status_bar[setdiff(names(app$status_bar), id)])
 
-  ## New content
-  app$cat(content)
+  ## New content, if it is an ANSI terminal we'll overwrite and clear
+  ## until the end of the line. Otherwise we add some space characters
+  ## to the content to make sure we clear up residual content.
+  output <- get_real_output(app$output)
+  if (is_ansi_tty(output)) {
+    app$cat(paste0("\r", content, ANSI_EL))
+  } else {
+    nsp <- max(nchar_fixed(current) - nchar_fixed(content), 0)
+    app$cat(paste0("\r", content, strrep(" ", nsp)))
+  }
 }
 
-#' @importFrom fansi nchar_ctl
-
 clii__clear_status_bar <- function(app) {
-
-  text <- app$status_bar[[1]]$content
-  len <- nchar_ctl(text)
-  app$cat(paste0("\r", strrep(" ", len), "\r"))
+  output <- get_real_output(app$output)
+  if (is_ansi_tty(output)) {
+    app$cat(paste0("\r", ANSI_EL))
+  } else {
+    text <- app$status_bar[[1]]$content
+    len <- nchar_fixed(text, type = "width")
+    app$cat(paste0("\r", strrep(" ", len), "\r"))
+  }
 }
