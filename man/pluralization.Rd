@@ -6,20 +6,18 @@
 \description{
 CLI pluralization
 }
-\seealso{
-Other pluralization: 
-\code{\link{no}()}
-}
-\concept{pluralization}
 \section{Introduction}{
-
 cli has tools to create messages that are printed correctly in singular
 and plural forms. This usually requires minimal extra work, and
 increases the quality of the messages greatly. In this document we first
 show some pluralization examples that you can use as guidelines.
 Hopefully these are intuitive enough, so that they can be used without
 knowing the exact cli pluralization rules.
+
+If you need pluralization without the semantic cli functions, see the
+\code{pluralize()} function.
 }
+
 \section{Examples}{
 \subsection{Pluralization markup}{
 
@@ -72,7 +70,7 @@ cli_text("Will remove the \{.pkg \{pkgs\}\} package\{?s\}.")
 }\if{html}{\out{</div>}}\preformatted{#> Will remove the pkg1 package.
 }\if{html}{\out{<div class="r">}}\preformatted{pkgs <- c("pkg1", "pkg2", "pkg3")
 cli_text("Will remove the \{.pkg \{pkgs\}\} package\{?s\}.")
-}\if{html}{\out{</div>}}\preformatted{#> Will remove the pkg1, pkg2 and pkg3 packages.
+}\if{html}{\out{</div>}}\preformatted{#> Will remove the pkg1, pkg2, and pkg3 packages.
 }
 
 Note that the length is only used for non-numeric vectors (when
@@ -84,7 +82,7 @@ cli_text("Will remove \{?no/the/the\} \{.pkg \{pkgs\}\} package\{?s\}.")
 }\if{html}{\out{</div>}}\preformatted{#> Will remove no packages.
 }\if{html}{\out{<div class="r">}}\preformatted{pkgs <- c("pkg1", "pkg2", "pkg3")
 cli_text("Will remove \{?no/the/the\} \{.pkg \{pkgs\}\} package\{?s\}.")
-}\if{html}{\out{</div>}}\preformatted{#> Will remove the pkg1, pkg2 and pkg3 packages.
+}\if{html}{\out{</div>}}\preformatted{#> Will remove the pkg1, pkg2, and pkg3 packages.
 }
 
 When the pluralization markup contains three alternatives, like above,
@@ -112,13 +110,12 @@ this may appear before or after the pluralization markup. If the message
 contains multiple \code{{}} substitutions \emph{after} pluralization markup, an
 error is thrown.
 
-Similarly, if the message contains no \code{{}} substituions at all, but has
-pluralization markup, and error is thrown.
+Similarly, if the message contains no \code{{}} substitutions at all, but has
+pluralization markup, an error is thrown.
+}
 }
 
-}
 \section{Rules}{
-
 The exact rules of cli’s pluralization. There are two sets of rules. The
 first set specifies how a quantity is associated with a \verb{\{?\}}
 pluralization markup. The second set describes how the \verb{\{?\}} is parsed
@@ -139,21 +136,28 @@ the pluralization quantity for all \verb{\{?\}} markup in the message.
 markup cli uses the quantity of the \code{{}} substitution that precedes
 it.
 \item If a message has multiple \code{{}} substitutions and has pluralization
-markup with a preceding \code{{}} substitution, and error is thrown.
+markup without a preceding \code{{}} substitution, an error is thrown.
 }
 }
 
 \subsection{Pluralization markup}{
 \enumerate{
-\item Pluralization markup start with \verb{\{?} and ends with \verb{\}}. It may not
-contain \verb{\{} and \verb{\}} characters, so it may not contains \code{{}}
+\item Pluralization markup starts with \verb{\{?} and ends with \verb{\}}. It may not
+contain \verb{\{} and \verb{\}} characters, so it may not contain \code{{}}
 substitutions either.
 \item Alternative words or suffixes are separated by \code{/}.
 \item If there is a single alternative, then \emph{nothing} is used if
 \code{quantity == 1} and this single alternative is used if \code{quantity != 1}.
-\item If there are two alternatives, the first one is used for \code{quantity == 1}, the second one for \code{quantity != 1} (include 0).
-\item If there are three alternatives, the first one is used for \code{quantity == 0}, the second for \code{quantity == 1}, and the third otherwise.
+\item If there are two alternatives, the first one is used for \code{quantity == 1}, the second one for \code{quantity != 1} (including `\code{quantity == 0}).
+\item If there are three alternatives, the first one is used for \code{quantity == 0}, the second one for \code{quantity == 1}, and the third one
+otherwise.
+}
 }
 }
 
+\seealso{
+Other pluralization: 
+\code{\link{no}()},
+\code{\link{pluralize}()}
 }
+\concept{pluralization}

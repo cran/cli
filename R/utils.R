@@ -147,3 +147,15 @@ has_asciicast_support <- function() {
      asNamespace("asciicast")$is_svg_supported()
  }, error = function(e) FALSE)
 }
+
+last_character <- function(x) {
+  substr(x, nchar(x), nchar(x))
+}
+
+first_character <- function(x) {
+  substr(x, 1, 1)
+}
+
+is_alnum <- function(x) {
+  x %in% c(letters, LETTERS, 0:9, "/")
+}
