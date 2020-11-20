@@ -1,9 +1,16 @@
 
+#' @importFrom crayon reset bold blurred italic underline inverse
+#'   hidden strikethrough
+#' @importFrom crayon black red green yellow blue magenta cyan
+#'   white silver
+#' @importFrom crayon bgBlack bgRed bgGreen bgYellow bgBlue bgMagenta
+#'   bgCyan bgWhite
+
 cray_wrapper_fun <- function(style) {
   style
   fun <- function(...) {
     txt <- paste0(...)
-    structure(style(txt), class = "ansi_string")
+    structure(style(txt), class = c("ansi_string", "character"))
   }
   class(fun) <- "ansi_style"
   attr(fun, "crayon_style") <- style
@@ -109,6 +116,7 @@ print.ansi_style <- function(x, ...) {
 #'
 #' @family ANSI styling
 #' @export
+#' @importFrom crayon combine_styles
 #' @examples
 #' ## Use style names
 #' alert <- combine_ansi_styles("bold", "red4")
@@ -158,7 +166,7 @@ combine_ansi_styles <- function(...) {
 #' * `style_underline()`,
 #' * `style_inverse()`,
 #' * `style_hidden()`,
-#' * `style_strikethrough() (not widely supported).
+#' * `style_strikethrough()` (not widely supported).
 #'
 #' The style functions take any number of character vectors as arguments,
 #' and they concatenate them using `paste0()` before adding the style.
