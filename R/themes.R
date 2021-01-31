@@ -78,26 +78,32 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
       fmt = function(x) paste0(symbol$line, symbol$line, " ", x, " ")),
 
     ".alert" = list(
-      before = paste0(symbol$arrow_right, " ")
+      before = function() paste0(symbol$arrow_right, " ")
     ),
     ".alert-success" = list(
-      before = paste0(crayon::green(symbol$tick), " ")
+      before = function() paste0(col_green(symbol$tick), " ")
     ),
     ".alert-danger" = list(
-      before = paste0(crayon::red(symbol$cross), " ")
+      before = function() paste0(col_red(symbol$cross), " ")
     ),
     ".alert-warning" = list(
-      before = paste0(crayon::yellow("!"), " ")
+      before = function() paste0(col_yellow("!"), " ")
     ),
     ".alert-info" = list(
-      before = paste0(crayon::cyan(symbol$info), " ")
+      before = function() paste0(col_cyan(symbol$info), " ")
     ),
 
     par = list("margin-top" = 0, "margin-bottom" = 1),
     li = list("padding-left" = 2),
-    ul = list("list-style-type" = symbol$bullet, "padding-left" = 0),
-    "ul ul" = list("list-style-type" = symbol$circle, "padding-left" = 2),
-    "ul ul ul" = list("list-style-type" = symbol$line),
+    ul = list(
+      "list-style-type" = function() symbol$bullet,
+      "padding-left" = 0
+    ),
+    "ul ul" = list(
+      "list-style-type" = function() symbol$circle,
+      "padding-left" = 2
+    ),
+    "ul ul ul" = list("list-style-type" = function() symbol$line),
 
     "ul ul" = list("padding-left" = 2),
     "ul dl" = list("padding-left" = 2),
@@ -110,10 +116,14 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
 
     blockquote = list("padding-left" = 4L, "padding-right" = 10L,
                       "font-style" = "italic", "margin-top" = 1L,
-                      "margin-bottom" = 1L, before = symbol$dquote_left,
-                      after = symbol$dquote_right),
-    "blockquote cite" = list(before = paste0(symbol$em_dash, " "),
-                             "font-style" = "italic", "font-weight" = "bold"),
+                      "margin-bottom" = 1L,
+                      before = function() symbol$dquote_left,
+                      after = function() symbol$dquote_right),
+    "blockquote cite" = list(
+      before = function() paste0(symbol$em_dash, " "),
+      "font-style" = "italic",
+      "font-weight" = "bold"
+    ),
 
     .code = list(fmt = format_code(dark)),
     .code.R = list(fmt = format_r_code(dark)),
@@ -144,7 +154,7 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
 }
 
 quote_weird_name <- function(x) {
-  x2 <- crayon::strip_style(x)
+  x2 <- ansi_strip(x)
   if (!is_alnum(first_character(x2)) || !is_alnum(last_character(x2))) {
     x <- paste0("'", x, "'")
   }
@@ -185,7 +195,7 @@ theme_function <- function(dark) {
 
 format_r_code <- function(dark) {
   function(x) {
-    x <- crayon::strip_style(x)
+    x <- ansi_strip(x)
     lines <- unlist(strsplit(x, "\n", fixed = TRUE))
     tryCatch(prettycode::highlight(lines), error = function(x) lines)
   }
@@ -213,8 +223,6 @@ theme_create <- function(theme) {
   res
 }
 
-#' @importFrom crayon combine_styles make_style
-
 create_formatter <- function(x) {
   is_bold <- identical(x[["font-weight"]], "bold")
   is_italic <- identical(x[["font-style"]], "italic")
@@ -226,14 +234,14 @@ create_formatter <- function(x) {
       && !is_bg_color) return(x)
 
   fmt <- c(
-    if (is_bold) list(crayon::bold),
-    if (is_italic) list(crayon::italic),
-    if (is_underline) list(crayon::underline),
-    if (is_color) make_style(x[["color"]]),
-    if (is_bg_color) make_style(x[["background-color"]], bg = TRUE)
+    if (is_bold) list(style_bold),
+    if (is_italic) list(style_italic),
+    if (is_underline) list(style_underline),
+    if (is_color) make_ansi_style(x[["color"]]),
+    if (is_bg_color) make_ansi_style(x[["background-color"]], bg = TRUE)
   )
 
-  new_fmt <- do.call(combine_styles, fmt)
+  new_fmt <- do.call(combine_ansi_styles, fmt)
 
   if (is.null(x[["fmt"]])) {
     x[["fmt"]] <- new_fmt

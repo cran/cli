@@ -90,7 +90,7 @@ simple_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     ".alert-danger" = list(
       "background-color" = "red",
       color = "white",
-      before = paste0(symbol$cross, " ")
+      before = function() paste0(symbol$cross, " ")
     ),
 
     ".alert-warning" = list(
@@ -100,14 +100,14 @@ simple_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     ),
 
     ".alert-success" = list(
-      before = paste0(crayon::green(symbol$tick), " ")
+      before = function() paste0(col_green(symbol$tick), " ")
     ),
     ".alert-info" = list(
-      before = paste0(crayon::cyan(symbol$info), " ")
+      before = function() paste0(col_cyan(symbol$info), " ")
     ),
 
     ".alert-start" = list(
-      before = paste0(symbol$arrow_right, " ")),
+      before = function() paste0(symbol$arrow_right, " ")),
 
     span.pkg = list(
       color = "blue",
@@ -159,12 +159,12 @@ simple_theme_file <- function() {
 simple_theme_r_code <- function(dark) {
   dark <- dark
   style <- if (dark) {
-    crayon::make_style("#f0f0f0")
+    make_ansi_style("#f0f0f0")
   } else {
-    crayon::make_style("#202020")
+    make_ansi_style("#202020")
   }
   function(x) {
-    x <- crayon::strip_style(x)
+    x <- ansi_strip(x)
     lines <- strsplit(x, "\n", fixed = TRUE)[[1]]
     fmd <- tryCatch(prettycode::highlight(lines), error = function(x) lines)
     style(fmd)

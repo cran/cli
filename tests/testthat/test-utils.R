@@ -32,7 +32,7 @@ test_that("ruler", {
     "----+----1----+----2",
     "12345678901234567890"
   )
-  expect_equal(crayon::strip_style(out), exp)
+  expect_equal(ansi_strip(out), exp)
 })
 
 test_that("rpad", {
@@ -123,7 +123,7 @@ test_that("dedent", {
     list(" x  ", 5, "x  ")
   )
 
-  for (c in cases) expect_identical(dedent(c[[1]], c[[2]]), c[[3]])
+  for (c in cases) expect_identical(dedent(c[[1]], c[[2]]), ansi_string(c[[3]]))
 })
 
 test_that("tail_na", {

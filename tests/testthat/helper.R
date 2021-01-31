@@ -1,6 +1,6 @@
 
 rule_class <- function(x) {
-  structure(x, class = c("rule", "character"))
+  structure(x, class = c("rule", "ansi_string", "character"))
 }
 
 capture_messages <- function(expr) {
@@ -23,7 +23,7 @@ capt00 <- function(expr) {
 
 capt0 <- function(expr, strip_style = FALSE) {
   out <- capture_messages(expr)    
-  if  (strip_style) crayon::strip_style(out) else out
+  if  (strip_style) ansi_strip(out) else out
 }
 
 capt_cat <- function(expr) {

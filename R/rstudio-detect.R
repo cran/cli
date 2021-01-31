@@ -43,7 +43,7 @@ rstudio <- local({
 
   detect <- function(clear_cache = FALSE) {
     # Cached?
-    if (clear_cache) data <<- list()
+    if (clear_cache) data <<- NULL
     if (!is.null(data)) return(get_caps(data))
 
     # Otherwise get data
@@ -60,10 +60,14 @@ rstudio <- local({
       # 2. RStudio console, properly initialized
       "rstudio_console"
 
-    } else if (new$gui == "RStudio" && ! new$api) {
-      # 3. RStudio console, initilizing
+    } else if (! new$api && basename(new$args[1]) == "RStudio") {
+      # 3. RStudio console, initializing
       cache <- FALSE
       "rstudio_console_starting"
+
+    } else if (new$gui == "Rgui") {
+      # Still not RStudio, but Rgui that was started from RStudio
+      "not_rstudio"
 
     } else if (new$tty && new$envs[["ASCIICAST"]] != "true") {
       # 4. R in the RStudio terminal
@@ -89,7 +93,8 @@ rstudio <- local({
       "rstudio_subprocess"
     }
 
-    if (cache) data <<- new
+    installing <- Sys.getenv("R_PACKAGE_DIR", "")
+    if (cache && installing == "") data <<- new
 
     get_caps(new)
   }
@@ -134,9 +139,9 @@ rstudio <- local({
     list(
       type = "rstudio_terminal",
       dynamic_tty = TRUE,
-      ansi_tty = TRUE,
-      ansi_color = data$envs[["RSTUDIO_CONSOLE_COLOR"]] != "",
-      num_colors = as.integer(data$envs[["RSTUDIO_CONSOLE_COLOR"]])
+      ansi_tty = FALSE,
+      ansi_color = FALSE,
+      num_colors = 1L
     )
   }
 

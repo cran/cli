@@ -9,11 +9,15 @@ test_that("add/remove/list themes", {
   on.exit(default_app()$remove_theme(id), add = TRUE)
   expect_true(id %in% names(default_app()$list_themes()))
 
-  withr::with_options(list(crayon.enabled = TRUE, crayon.colors = 256), {
+  withr::with_options(list(cli.num_colors = 256L), {
     capt0(cli_par(class = "green"))
     out <- capt0(cli_text(lorem_ipsum()))
     capt0(cli_end())
-    expect_true(grepl(start(crayon::make_style("green")), out, fixed = TRUE))
+    expect_true(grepl(
+      attr(make_ansi_style("green"), "_styles")[[1]]$open,
+      out,
+      fixed = TRUE
+    ))
   })
 
   default_app()$remove_theme(id)
@@ -35,7 +39,7 @@ test_that("explicit formatter is used, and combined", {
     ))
   on.exit(default_app()$remove_theme(id), add = TRUE)
   out <- capt0(cli_text("this is {.emph it}, really"))
-  expect_match(crayon::strip_style(out), "(((<<it>>)))", fixed = TRUE)
+  expect_match(ansi_strip(out), "(((<<it>>)))", fixed = TRUE)
 })
 
 test_that("simple theme", {
@@ -61,4 +65,23 @@ test_that("user's override", {
     expect_match(out, "override:")
     stop_app()
   })
+})
+
+test_that("theme does not precompute Unicode symbols", {
+  withr::local_options(cli.unicode = TRUE, cli.num_colors = 256L)
+  start_app()
+  msg <- NULL
+  withCallingHandlers(
+    cli_alert_success("ok"),
+    cliMessage = function(m) msg <<- m
+  )
+  expect_true(ansi_has_any(msg$message))
+
+  msg2 <- NULL
+  withr::local_options(cli.unicode = FALSE, cli.num_colors = 1L)
+  withCallingHandlers(
+    cli_alert_success("ok2"),
+    cliMessage = function(m) msg2 <<- m
+  )
+  expect_equal(msg2$message, "v ok2\n")
 })
