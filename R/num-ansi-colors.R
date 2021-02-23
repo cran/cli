@@ -129,6 +129,7 @@ num_ansi_colors <- function(stream = "auto") {
     "rstudio_console_starting",
     "rstudio_build_pane"
   )
+  if (is.na(rstudio$num_colors)) rstudio$num_colors <- 1L
   if (rstudio$type %in% rstudio_colors && is_std) {
     return(rstudio$num_colors)
   }
@@ -149,6 +150,7 @@ num_ansi_colors <- function(stream = "auto") {
   if (!is_std) return(1L)
 
   # Otherwise use/set the cache
+  if (is.null(clienv$num_colors)) clienv$num_colors <- list()
   clienv$num_colors[[std]] <- clienv$num_colors[[std]] %||% detect_tty_colors()
   clienv$num_colors[[std]]
 }

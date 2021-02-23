@@ -1,7 +1,7 @@
-fcfa8fc088b12161cc33090215de590d *DESCRIPTION
+56ddccd65976b4b0a5013d09db67a16e *DESCRIPTION
 fb71a6cc8aab0b0534ae3ac11be95125 *LICENSE
 f1897b334ff07efc3dc815babaf0c524 *NAMESPACE
-5ab85c81727400ab11931d360f915ff4 *NEWS.md
+e7c7be7b4dbeb80644770d6875ec4fbc *NEWS.md
 feec06b3af96459e2dbc112df3698439 *R/aaa-utils.R
 2de0d49c4ee4e5b06a007aad08e5f4be *R/ansi-hyperlink.R
 cd9a096faf39d45ff9084969533b5ec3 *R/ansi-utils.R
@@ -23,7 +23,7 @@ dd1ecbf119dd08736c7c58e62a03690d *R/cliapp-docs.R
 dfb06ba1c28980ce30d7368032b79349 *R/internals.R
 f92f30b1b2157057f5973f8b94b208e0 *R/lazyrmd.R
 ff681a26e738a802bd685bd2961a5039 *R/lorem.R
-d8606adf1cdc25b50ce7ebb5c3c4cc16 *R/num-ansi-colors.R
+71d1a7be6acbcf41577d1a210b6d429d *R/num-ansi-colors.R
 b3202fa47bb1c1b7e31d09a2d12a7cec *R/onload.R
 ff7b80eefe0fd45ba93903ae9b5b4932 *R/pluralize.R
 0684c80487792c973578cff43389a0c7 *R/print.R
@@ -33,11 +33,11 @@ f28d13d5f899152392e6ff0b1b39e2ca *R/rstudio-detect.R
 6314e0be26278524847b03e0eaa82536 *R/server.R
 ce5be42c4e9068b679697abfe8709bbf *R/simple-theme.R
 13c16bf0c3b7bd5703382a43eeba09cd *R/sitrep.R
-2fabfa50a50c8cd97d9f0f705132043b *R/spinner.R
+9951cce24963a5fa938730c49645cb8b *R/spinner.R
 f2087053effcf523159c45278c326dbe *R/status-bar.R
 b3cf4be18d5d00e40d3b1a11f2795f91 *R/symbol.R
 573b5757c5b371846ad862101f7e83fa *R/sysdata.rda
-f800d61ca8a0d14cb466c551193ac998 *R/themes.R
+efebab034cb283fcd4c6c1b0278d45c0 *R/themes.R
 1ad7665219bce825122ba890fb3bad71 *R/tree.R
 c9c9c3af49979ebcd199d07936e463c5 *R/tty.R
 24386f79c149a1e836ad78b53d615156 *R/unicode.R
@@ -157,7 +157,7 @@ b87906abeaca3bfc753e2d56880de952 *tests/testthat/test-collapsing.R
 f43c4e548d2c757fdb456b139a7c02e6 *tests/testthat/test-containers.R
 e65d6a46664d7bab031e5f125759e94d *tests/testthat/test-css.R
 db07346ce05fda09f8a91533020c07a9 *tests/testthat/test-custom-handler.R
-398683aa06eb55504c20db6d7f43c15d *tests/testthat/test-headers.R
+626a9c798f3a073411672b4b8703383d *tests/testthat/test-headers.R
 ea6a7a165798040c0bb1ad2e7f8fb230 *tests/testthat/test-inline.R
 61d5064c55f69aaec8126dd32b547974 *tests/testthat/test-lists.R
 fab7f0d58f4beb279b674077b226d517 *tests/testthat/test-non-breaking-space.R
