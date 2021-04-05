@@ -6,7 +6,7 @@
 #' of `expr`, before styling and collapsing it.
 #'
 #' It is possible to define new S3 methods for `cli_format` and then
-#' these will be used automatically for `{.cal ...}` expressions.
+#' these will be used automatically for `{.val ...}` expressions.
 #'
 #' @param x The object to format.
 #' @param style List of formatting options, see the individual methods
@@ -14,7 +14,7 @@
 #' @param ... Additional arguments for methods.
 #'
 #' @export
-#' @seealso cli_vec
+#' @seealso [cli_vec()]
 #' @examples
 #' things <- c(rep("this", 3), "that")
 #' cli_format(things)
@@ -76,7 +76,7 @@ cli_format.numeric <- function(x, style = list(), ...) {
 #' [glue::glue_collapse()]. See an example below.
 #'
 #' @export
-#' @seealso cli_format
+#' @seealso [cli_format()]
 #' @examples
 #' v <- cli_vec(
 #'   c("foo", "bar", "foobar"),

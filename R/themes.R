@@ -93,26 +93,48 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
       before = function() paste0(col_cyan(symbol$info), " ")
     ),
 
+    ".memo .memo-item-empty" = list(),
+    ".memo .memo-item-space" = list("margin-left" = 2),
+    ".memo .memo-item-v" = list(
+      "margin-left" = 2,
+      before = function(x) paste0(col_green(symbol$tick), " ")
+    ),
+    ".memo .memo-item-x" = list(
+      "margin-left" = 2,
+      before = function(x) paste0(col_red(symbol$cross), " ")
+    ),
+    ".memo .memo-item-!" = list(
+      "margin-left" = 2,
+      before = function(x) paste0(col_yellow("!"), " ")
+    ),
+    ".memo .memo-item-i" = list(
+      "margin-left" = 2,
+      before = function(x) paste0(col_cyan(symbol$info), " ")
+    ),
+    ".memo .memo-item-*" = list(
+      "margin-left" = 2,
+      before = function(x) paste0(col_cyan(symbol$bullet), " ")
+    ),
+
     par = list("margin-top" = 0, "margin-bottom" = 1),
-    li = list("padding-left" = 2),
     ul = list(
-      "list-style-type" = function() symbol$bullet,
-      "padding-left" = 0
+      "list-style-type" = function() symbol$bullet
     ),
     "ul ul" = list(
-      "list-style-type" = function() symbol$circle,
-      "padding-left" = 2
+      "list-style-type" = function() symbol$circle
     ),
     "ul ul ul" = list("list-style-type" = function() symbol$line),
 
-    "ul ul" = list("padding-left" = 2),
-    "ul dl" = list("padding-left" = 2),
-    "ol ol" = list("padding-left" = 2),
-    "ol ul" = list("padding-left" = 2),
-    "ol dl" = list("padding-left" = 2),
-    "dl ol" = list("padding-left" = 2),
-    "dl ul" = list("padding-left" = 2),
-    "dl dl" = list("padding-left" = 2),
+    # This means that list elements have a margin, if they are nested
+    "ul ul li" = list("margin-left" = 2),
+    "ul ol li" = list("margin-left" = 2),
+    "ul dl li" = list("margin-left" = 2),
+    "ol ul li" = list("margin-left" = 2),
+    "ol ol li" = list("margin-left" = 2),
+    "ol dl li" = list("margin-left" = 2),
+    "ol ul li" = list("margin-left" = 2),
+    "ol ol li" = list("margin-left" = 2),
+    "ol dl li" = list("margin-left" = 2),
 
     blockquote = list("padding-left" = 4L, "padding-right" = 10L,
                       "font-style" = "italic", "margin-top" = 1L,
@@ -132,6 +154,7 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     span.strong = list("font-weight" = "bold"),
     span.code = theme_code_tick(dark),
 
+    span.q   = list(fmt = quote_weird_name),
     span.pkg = list(color = "blue"),
     span.fn = theme_function(dark),
     span.fun = theme_function(dark),
@@ -154,11 +177,33 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
 }
 
 quote_weird_name <- function(x) {
+  x <- gsub(" ", "\u00a0", x)
   x2 <- ansi_strip(x)
-  if (!is_alnum(first_character(x2)) || !is_alnum(last_character(x2))) {
+  wfst <- !is_alnum(first_character(x2))
+  wlst <- !is_alnum(last_character(x2))
+  if (wfst || wlst) {
+    lsp <- leading_space(x2)
+    tsp <- trailing_space(x2)
+    if (nzchar(lsp)) {
+      x <- paste0(
+        bg_grey(lsp),
+        ansi_substr(x, nchar(lsp) + 1, ansi_nchar(x))
+      )
+    }
+    if (nzchar(tsp)) {
+      x <- paste0(
+        ansi_substr(x, 1, ansi_nchar(x) - nchar(tsp)),
+        bg_grey(tsp)
+      )
+    }
     x <- paste0("'", x, "'")
   }
   x
+}
+
+bg_grey <- function(...) {
+  grey <- cli::make_ansi_style("grey", bg = TRUE)
+  grey(...)
 }
 
 detect_dark_theme <- function(dark) {
@@ -364,8 +409,18 @@ match_selector_node <- function(node, cnt) {
 match_selector <- function(sels, cnts) {
   sptr <- length(sels)
   cptr <- length(cnts)
+
+  # Last selector must match the last container
+  if (sptr == 0 || sptr > cptr) return(FALSE)
+  match <- match_selector_node(sels[[sptr]], cnts[[cptr]])
+  if (!match) return (FALSE)
+
+  # Plus the rest should match somehow
+  sptr <- sptr - 1L
+  cptr <- cptr - 1L
   while (sptr != 0L && sptr <= cptr) {
-    if (match_selector_node(sels[[sptr]], cnts[[cptr]])) {
+    match <- match_selector_node(sels[[sptr]], cnts[[cptr]])
+    if (match) {
       sptr <- sptr - 1L
       cptr <- cptr - 1L
     } else {

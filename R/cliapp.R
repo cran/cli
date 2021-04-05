@@ -9,6 +9,24 @@ cliapp <- function(theme = getOption("cli.theme"),
     new = function(theme, user_theme, output)
       clii_init(app, theme, user_theme, output),
 
+    ## Meta
+    meta = function(...) {
+      old <- app$output
+      on.exit(app$output <- old, add = TRUE)
+      on.exit(app$signal <- NULL, add = TRUE)
+      out <- rawConnection(raw(1000), open = "w")
+      on.exit(close(out), add = TRUE)
+      app$output <- out
+      app$signal <- FALSE
+
+      for (msg in list(...)) {
+        do.call(app[[msg$type]], msg$args)
+      }
+
+      txt <- rawToChar(rawConnectionValue(out))
+      clii__message(txt, appendLF = FALSE, output = old, signal = TRUE)
+    },
+
     ## Themes
     list_themes = function()
       clii_list_themes(app),
@@ -79,6 +97,10 @@ cliapp <- function(theme = getOption("cli.theme"),
     alert_info = function(text, id = NULL, class = NULL, wrap = FALSE)
       clii_alert(app, "alert-info", text, id, class, wrap),
 
+    ## Memo
+    memo = function(text, id = NULL, class = NULL)
+      clii_memo(app, text, id, class),
+
     ## Horizontal rule
     rule = function(left, center, right, id = NULL)
       clii_rule(app, left, center, right, id),
@@ -136,7 +158,9 @@ clii_init <- function(app, theme, user_theme, output) {
   app$output <- output
   app$styles <- NULL
 
-  app$add_theme(builtin_theme())
+  if (Sys.getenv("CLI_NO_BUILTIN_THEME", "") != "true") {
+    app$add_theme(builtin_theme())
+  }
   app$add_theme(theme)
   app$add_theme(user_theme)
 
@@ -234,9 +258,37 @@ clii_alert <- function(app, type, text, id, class, wrap) {
   style <- app$get_current_style()
   before <- call_if_fun(style$before) %||% ""
   after <- call_if_fun(style$after) %||% ""
+  before <- gsub(" ", "\u00a0", before)
+  after <- gsub(" ", "\u00a0", after)
   text[1] <- paste0(before, text[1])
   text[length(text)] <- paste0(text[length(text)], after)
   if (is.function(style$fmt)) text <- style$fmt(text)
-  if (wrap) text <- ansi_strwrap(text, exdent = 2)
+  if (wrap) {
+    text <- ansi_strwrap(text, exdent = ansi_nchar(before, "width"))
+  }
   app$cat_ln(text)
+}
+
+## Memo -------------------------------------------------------------
+
+clii_memo <- function(app, text, id, class) {
+  clii__container_start(app, "div", id = id, class = paste("memo", class))
+  on.exit(clii__container_end(app, id), add = TRUE)
+
+  # Normalize names a bit, so we can use them as class names
+  nms <- as.character(names(text))
+  length(nms) <- length(text)
+  nms[is.na(nms) | nms == ""] <- "empty"
+  nms[nms == " "] <- "space"
+  nms <- gsub(" ", "-", nms)
+  cls <- paste0("memo-item-", nms)
+
+  lapply(seq_along(text), function(i) {
+    iid <- new_uuid()
+    clii__container_start(app, "div", id = iid, class = cls[i])
+    on.exit(clii__container_end(app, iid), add = TRUE)
+    app$text(text[[i]])
+  })
+
+  invisible()
 }

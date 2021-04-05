@@ -1,4 +1,20 @@
 
+# cli 2.4.0
+
+* New `cli_memo()` function to create a list of items or tasks.
+
+* New `cli::cli()` function to create a single cli message from multiple
+  cli calls (#170).
+
+* cli now highlights weird names, e.g. path names with leading or
+  trailing space (#227).
+
+* Styling is fixed at several places. In particular, nested lists should
+  be now formatted better (#221).
+
+* New `spark_bar()` and `spark_line()` funcions to draw small bar or
+  line charts.
+
 # cli 2.3.1
 
 * ANSI color support detection works correctly now in older RStudio,

@@ -21,8 +21,7 @@ clii__container_start <- function(app, tag, class = NULL,
   for (t in seq_along(app$themes)) {
     theme <- app$themes[[t]]
     for (i in seq_len(nrow(theme))) {
-      if (is.na(theme$cnt[i]) &&
-          match_selector(theme$parsed[[i]], app$doc)) {
+      if (match_selector(theme$parsed[[i]], app$doc)) {
         app$themes[[t]]$cnt[i] <- id
         new_sels <- modifyList(new_sels, theme$style[[i]])
       }
@@ -41,15 +40,23 @@ clii__container_start <- function(app, tag, class = NULL,
 #' @importFrom stats na.omit
 
 clii__container_end <- function(app, id) {
+  debug <- is_yes(Sys.getenv("CLI_DEBUG_BAD_END", ""))
+
   ## Defaults to last container
   if (is.null(id) || is.na(id)) id <- last(app$doc)$id
 
   ## Do not remove the <body>
-  if (id == "body") return(invisible(app))
+  if (id == "body") {
+    if (debug) warning("No cli container to close")
+    return(invisible(app))
+  }
 
   ## Do we have 'id' at all?
   wh <- which(vlapply(app$doc, function(x) identical(x$id, id)))[1]
-  if (is.na(wh)) return(invisible(app))
+  if (is.na(wh)) {
+    if (debug) warning("Can't find cli container '", id, "' to close")
+    return(invisible(app))
+  }
 
   ## ids to remove
   del_ids <- unlist(lapply(tail(app$doc, - (wh - 1L)), "[[", "id"))
@@ -172,8 +179,8 @@ clii__item_text <- function(app, type, name, cnt_id, text, .list) {
 
   app$xtext(
     .list = c(list(glue_delay(head)), list(text), .list),
-    indent = - style$`padding-left` %||% 0,
-    padding = cnt_style$`padding-left` %||% 0
+    indent = - (style$`padding-left` %||% 0),
+    padding = (cnt_style$`padding-left` %||% 0)
   )
 }
 
