@@ -3,8 +3,6 @@ add_child <- function(x, tag, ...) {
   push(x, list(tag = tag, ...))
 }
 
-#' @importFrom glue glue
-
 clii__container_start <- function(app, tag, class = NULL,
                                   id = NULL, theme = NULL) {
 
@@ -23,7 +21,7 @@ clii__container_start <- function(app, tag, class = NULL,
     for (i in seq_len(nrow(theme))) {
       if (match_selector(theme$parsed[[i]], app$doc)) {
         app$themes[[t]]$cnt[i] <- id
-        new_sels <- modifyList(new_sels, theme$style[[i]])
+        new_sels <- utils::modifyList(new_sels, theme$style[[i]])
       }
     }
   }
@@ -35,9 +33,6 @@ clii__container_start <- function(app, tag, class = NULL,
 
   invisible(id)
 }
-
-#' @importFrom utils head
-#' @importFrom stats na.omit
 
 clii__container_end <- function(app, id) {
   debug <- is_yes(Sys.getenv("CLI_DEBUG_BAD_END", ""))
@@ -59,13 +54,13 @@ clii__container_end <- function(app, id) {
   }
 
   ## ids to remove
-  del_ids <- unlist(lapply(tail(app$doc, - (wh - 1L)), "[[", "id"))
+  del_ids <- unlist(lapply(utils::tail(app$doc, - (wh - 1L)), "[[", "id"))
 
   ## themes to remove
-  del_thm <- unlist(lapply(tail(app$doc, - (wh - 1L)), "[[", "theme"))
+  del_thm <- unlist(lapply(utils::tail(app$doc, - (wh - 1L)), "[[", "theme"))
 
   ## Remove the whole subtree of 'cnt'
-  app$doc <- head(app$doc, wh - 1L)
+  app$doc <- utils::head(app$doc, wh - 1L)
 
   ## Bottom margin
   del_from <- match(id, names(app$styles))
@@ -76,7 +71,7 @@ clii__container_end <- function(app, id) {
   app$vspace(bottom)
 
   ## Remove styles
-  app$styles <- head(app$styles, del_from - 1L)
+  app$styles <- utils::head(app$styles, del_from - 1L)
 
   ## Remove claimed styles that are not used any more
   for (t in seq_along(app$themes)) {

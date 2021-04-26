@@ -96,24 +96,31 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     ".memo .memo-item-empty" = list(),
     ".memo .memo-item-space" = list("margin-left" = 2),
     ".memo .memo-item-v" = list(
-      "margin-left" = 2,
+      "text-exdent" = 2,
       before = function(x) paste0(col_green(symbol$tick), " ")
     ),
     ".memo .memo-item-x" = list(
-      "margin-left" = 2,
+      "text-exdent" = 2,
       before = function(x) paste0(col_red(symbol$cross), " ")
     ),
     ".memo .memo-item-!" = list(
-      "margin-left" = 2,
+      "text-exdent" = 2,
       before = function(x) paste0(col_yellow("!"), " ")
     ),
     ".memo .memo-item-i" = list(
-      "margin-left" = 2,
+      "text-exdent" = 2,
       before = function(x) paste0(col_cyan(symbol$info), " ")
     ),
     ".memo .memo-item-*" = list(
-      "margin-left" = 2,
+      "text-exdent" = 2,
       before = function(x) paste0(col_cyan(symbol$bullet), " ")
+    ),
+    ".memo .memo-item->" = list(
+      "text-exdent" = 2,
+      before = function(x) paste0(symbol$arrow_right, " ")
+    ),
+    ".memo .memo-item-1" = list(
+      "font-weight" = "bold"
     ),
 
     par = list("margin-top" = 0, "margin-bottom" = 1),
@@ -172,38 +179,45 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
       transform = function(x, ...) cli_format(x, ...),
       color = "blue"
     ),
-    span.field = list(color = "green")
+    span.field = list(color = "green"),
+    span.cls = list(collapse = "/", color = "blue", before = "<", after = ">"
+    )
   )
 }
 
 quote_weird_name <- function(x) {
   x <- gsub(" ", "\u00a0", x)
   x2 <- ansi_strip(x)
-  wfst <- !is_alnum(first_character(x2))
-  wlst <- !is_alnum(last_character(x2))
+
+  fc <- first_character(x2)
+  sc <- second_character(x2)
+  lc <- last_character(x2)
+
+  wfst <- !is_alnum(fc, ok = "~") || (fc == "~" && !is_alnum(sc))
+  wlst <- !is_alnum(lc)
+
   if (wfst || wlst) {
     lsp <- leading_space(x2)
     tsp <- trailing_space(x2)
     if (nzchar(lsp)) {
       x <- paste0(
-        bg_grey(lsp),
+        bg_blue(lsp),
         ansi_substr(x, nchar(lsp) + 1, ansi_nchar(x))
       )
     }
     if (nzchar(tsp)) {
       x <- paste0(
         ansi_substr(x, 1, ansi_nchar(x) - nchar(tsp)),
-        bg_grey(tsp)
+        bg_blue(tsp)
       )
     }
+  }
+
+  if (wfst || wlst || num_ansi_colors() == 1) {
     x <- paste0("'", x, "'")
   }
-  x
-}
 
-bg_grey <- function(...) {
-  grey <- cli::make_ansi_style("grey", bg = TRUE)
-  grey(...)
+  x
 }
 
 detect_dark_theme <- function(dark) {
@@ -231,11 +245,11 @@ theme_code <- function(dark) {
 }
 
 theme_code_tick <- function(dark) {
-  modifyList(theme_code(dark), list(before = "`", after = "`"))
+  utils::modifyList(theme_code(dark), list(before = "`", after = "`"))
 }
 
 theme_function <- function(dark) {
-  modifyList(theme_code(dark), list(before = "`", after = "()`"))
+  utils::modifyList(theme_code(dark), list(before = "`", after = "()`"))
 }
 
 format_r_code <- function(dark) {
@@ -278,6 +292,13 @@ create_formatter <- function(x) {
   if (!is_bold && !is_italic && !is_underline && !is_color
       && !is_bg_color) return(x)
 
+  if (is_color && is.null(x[["color"]])) {
+    x[["color"]] <- "none"
+  }
+  if (is_bg_color && is.null(x[["background-color"]])) {
+    x[["background-color"]] <- "none"
+  }
+
   fmt <- c(
     if (is_bold) list(style_bold),
     if (is_italic) list(style_italic),
@@ -298,8 +319,6 @@ create_formatter <- function(x) {
   x
 }
 
-#' @importFrom utils modifyList
-
 merge_embedded_styles <- function(old, new) {
   # before and after is not inherited, fmt is not inherited, either
   # side margins are additive, class mappings are merged
@@ -311,11 +330,11 @@ merge_embedded_styles <- function(old, new) {
   left <- (old$`margin-left` %||% 0L) + (new$`margin-left` %||% 0L)
   right <- (old$`margin-right` %||% 0L) + (new$`margin-right` %||% 0L)
 
-  map <- modifyList(old$`class-map` %||% list(), new$`class-map` %||% list())
+  map <- utils::modifyList(old$`class-map` %||% list(), new$`class-map` %||% list())
 
   start <- new$start %||% 1L
 
-  mrg <- modifyList(old, new)
+  mrg <- utils::modifyList(old, new)
   mrg[c("margin-top", "margin-bottom", "margin-left", "margin-right",
         "start", "class-map")] <- list(top, bottom, left, right, start, map)
 

@@ -67,8 +67,6 @@ ansi_strip <- function(string) {
 ## Create a mapping between the string and its style-less version.
 ## This is useful to work with the colored string.
 
-#' @importFrom utils tail
-
 map_to_ansi <- function(x, text = NULL) {
 
   if (is.null(text)) {
@@ -80,7 +78,7 @@ map_to_ansi <- function(x, text = NULL) {
     function(text) {
       cbind(
         pos = cumsum(c(1, text[, "length"], Inf)),
-        offset = c(text[, "start"] - 1, tail(text[, "end"], 1), NA)
+        offset = c(text[, "start"] - 1, utils::tail(text[, "end"], 1), NA)
       )
     })
 
@@ -285,7 +283,6 @@ ansi_substring <- function(text, first, last = 1000000L) {
 #'
 #' @family ANSI string operations
 #' @export
-#' @importFrom utils head
 #' @examples
 #' str <- paste0(
 #'   col_red("I am red---"),
@@ -320,11 +317,11 @@ ansi_strsplit <- function(x, split, ...) {
     function(i) {
       y <- chunks[[i]]
       # empty split means drop empty first match
-      if(nrow(y) && !nzchar(split.r[[i]]) && !head(y, 1L)[, "length"]) {
+      if(nrow(y) && !nzchar(split.r[[i]]) && !utils::head(y, 1L)[, "length"]) {
         y <- y[-1L, , drop=FALSE]
       }
       # drop empty last matches
-      if(nrow(y) && !tail(y, 1L)[, "length"]) y[-nrow(y), , drop=FALSE] else y
+      if(nrow(y) && !utils::tail(y, 1L)[, "length"]) y[-nrow(y), , drop=FALSE] else y
     }
   )
   zero.chunks <- !vapply(chunks, nrow, integer(1L))
@@ -684,4 +681,59 @@ ansi_columns <- function(text, width = console_width(), sep = " ",
 
   clp <- apply(tm, 1, paste0, collapse = "")
   ansi_string(clp)
+}
+
+#' ANSI character translation and case folding
+#'
+#' There functions are similar to [toupper()], [tolower()] and
+#' [chartr()], but they keep the ANSI colors of the string.
+#'
+#' @inheritParams base::chartr
+#' @param x Input string. May have ANSI colors and styles.
+#' @return Character vector of the same length as `x`, containing
+#'   the translated strings. ANSI styles are retained.
+#'
+#' @family ANSI string operations
+#' @export
+#' @examples
+#' ansi_toupper(col_red("Uppercase"))
+#'
+#' ansi_tolower(col_red("LowerCase"))
+#'
+#' x <- paste0(col_green("MiXeD"), col_red(" cAsE 123"))
+#' ansi_chartr("iXs", "why", x)
+
+ansi_toupper <- function(x) {
+  ansi_convert(x, toupper)
+}
+
+#' @family ANSI string operations
+#' @export
+#' @rdname ansi_toupper
+
+ansi_tolower <- function(x) {
+  ansi_convert(x, tolower)
+}
+
+#' @family ANSI string operations
+#' @export
+#' @rdname ansi_toupper
+
+ansi_chartr <- function(old, new, x) {
+  ansi_convert(x, chartr, old, new)
+}
+
+ansi_convert <- function(x, converter, ...) {
+  ansi <- re_table(ansi_regex(), x)
+  text <- non_matching(ansi, x, empty=TRUE)
+  out <- mapply(x, text, USE.NAMES = FALSE, FUN = function(x1, t1) {
+    t1 <- t1[t1[,1] <= t1[,2], , drop = FALSE]
+    for (i in seq_len(nrow(t1))) {
+      substring(x1, t1[i, 1], t1[i, 2]) <-
+        converter(x = substring(x1, t1[i, 1], t1[i, 2]), ...)
+    }
+    x1
+  })
+
+  ansi_string(out)
 }

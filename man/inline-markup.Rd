@@ -38,20 +38,22 @@ cli_text("This is \{.emph \{adjective\}\}.")
 
 The default theme defines the following inline classes:
 \itemize{
-\item \code{emph} for emphasized text.
-\item \code{strong} for strong importance.
-\item \code{code} for a piece of code.
-\item \code{pkg} for a package name.
-\item \code{fun} for a function name.
 \item \code{arg} for a function argument.
-\item \code{key} for a keyboard key.
-\item \code{file} for a file name.
-\item \code{path} for a path (essentially the same as \code{file}).
+\item \code{cls} for an S3, S4, R6 or other class name.
+\item \code{code} for a piece of code.
 \item \code{email} for an email address.
+\item \code{emph} for emphasized text.
+\item \code{envvar} for the name of an environment variable.
+\item \code{field} for a generic field, e.g. in a named list.
+\item \code{file} for a file name.
+\item \code{fun} for a function name.
+\item \code{key} for a keyboard key.
+\item \code{path} for a path (essentially the same as \code{file}).
+\item \code{pkg} for a package name.
+\item \code{strong} for strong importance.
 \item \code{url} for a URL.
 \item \code{var} for a variable name.
-\item \code{envvar} for the name of an environment variable.
-\item \code{val} for a "value".
+\item \code{val} for a generic "value".
 }
 
 See examples below.
@@ -61,7 +63,7 @@ using them, see the example below.
 \subsection{Highlighting weird-looking values}{
 
 Often it is useful to highlight a weird file or path name, e.g. one
-that starts or ends with space characters. The buildin theme does this
+that starts or ends with space characters. The built-in theme does this
 for \code{.file}, \code{.path} and \code{.email} by default. You can highlight
 any string inline by adding the \code{.q} class to it.
 
@@ -80,13 +82,18 @@ terminals that support ANSI colors.
 
 When cli performs inline text formatting, it automatically collapses
 glue substitutions, after formatting. This is handy to create lists of
-files, packages, etc. See examples below.
+files, packages, etc.
+
+By default cli truncates long vectors. The truncation limit is by default
+one hundred elements, but you can change it with the \code{vec_trunc} style.
+
+See examples below.
 }
 
 \section{Formatting values}{
 
 
-The \code{val} inline class formats values. By default (c.f. the builtin
+The \code{val} inline class formats values. By default (c.f. the built-in
 theme), it calls the \code{\link[=cli_format]{cli_format()}} generic function, with the current
 style as the argument. See \code{\link[=cli_format]{cli_format()}} for examples.
 }
@@ -95,9 +102,9 @@ style as the argument. See \code{\link[=cli_format]{cli_format()}} for examples.
 
 
 It might happen that you want to pass a string to \verb{cli_*} functions,
-and you do not_ want command substitution in that string, because it
-might contain \verb{\}} and \verb{\{} characters. The simplest solution for this is
-referring to the string from a template:\preformatted{msg <- "Error in if (ncol(dat$y)) \{: argument is of length zero"
+and you do \emph{not} want command substitution in that string, because it
+might contain \verb{\{} and \verb{\}} characters. The simplest solution for this is
+to refer to the string from a template:\preformatted{msg <- "Error in if (ncol(dat$y)) \{: argument is of length zero"
 cli_alert_warning("\{msg\}")
 }
 
@@ -145,6 +152,14 @@ cli_end()
 pkgs <- c("pkg1", "pkg2", "pkg3")
 cli_text("Packages: {pkgs}.")
 cli_text("Packages: {.pkg {pkgs}}")
+
+## Custom truncation, style set via cli_vec
+nms <- cli_vec(names(mtcars), list(vec_trunc = 5))
+cli_text("Column names: {nms}.")
+
+## Classes are collapsed differently by default
+x <- Sys.time()
+cli_text("Hey {.var x} has class {.cls {class(x)}}")
 
 ## Escaping
 msg <- "Error in if (ncol(dat$y)) {: argument is of length zero"

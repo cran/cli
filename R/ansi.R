@@ -26,7 +26,20 @@ ansi_builtin_styles <- list(
   bg_blue = list(44, 49),
   bg_magenta = list(45, 49),
   bg_cyan = list(46, 49),
-  bg_white = list(47, 49)
+  bg_white = list(47, 49),
+
+  # similar to reset, but only for a single property
+  no_bold          = list(c(0,     23, 24, 27, 28, 29, 39, 49), 22),
+  no_blurred       = list(c(0,     23, 24, 27, 28, 29, 39, 49), 22),
+  no_italic        = list(c(0, 22,     24, 27, 28, 29, 39, 49), 23),
+  no_underline     = list(c(0, 22, 23,     27, 28, 29, 39, 49), 24),
+  no_inverse       = list(c(0, 22, 23, 24,     28, 29, 39, 49), 27),
+  no_hidden        = list(c(0, 22, 23, 24, 27,     29, 39, 49), 28),
+  no_strikethrough = list(c(0, 22, 23, 24, 27, 28,     39, 49), 29),
+  none             = list(c(0, 22, 23, 24, 27, 28, 29,     49), 39),
+  no_color         = list(c(0, 22, 23, 24, 27, 28, 29,     49), 39),
+  bg_none          = list(c(0, 22, 23, 24, 27, 28, 29, 39    ), 49),
+  no_bg_color      = list(c(0, 22, 23, 24, 27, 28, 29, 39    ), 49)
 )
 
 is_builtin_style <- function(x) {
@@ -45,9 +58,7 @@ ansi_fg_r <- c(
   "silver" = "grey"
 )
 
-#' @importFrom grDevices col2rgb
-
-ansi_fg_rgb <- col2rgb(ansi_fg_r)
+ansi_fg_rgb <- grDevices::col2rgb(ansi_fg_r)
 
 ansi_bg_r <- c(
   "bg_black" = "black",
@@ -60,7 +71,7 @@ ansi_bg_r <- c(
   "bg_white" = "white"
 )
 
-ansi_bg_rgb <- col2rgb(ansi_bg_r)
+ansi_bg_rgb <- grDevices::col2rgb(ansi_bg_r)
 
 ansi_style_str <- function(x) {
   paste0("\u001b[", x, "m", collapse = "")
@@ -206,10 +217,12 @@ make_ansi_style <- function(..., bg = FALSE, grey = FALSE,
 
 hash_color_regex <- "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$"
 
-#' @importFrom grDevices colors
-
 is_r_color <- function(x) {
-  x %in% colors() || grepl(hash_color_regex, x)
+  if (!is.character(x) || length(x) != 1 || is.na(x)) {
+    FALSE
+  } else {
+    x %in% grDevices::colors() || grepl(hash_color_regex, x)
+  }
 }
 
 is_rgb_matrix <- function(x) {
@@ -217,7 +230,7 @@ is_rgb_matrix <- function(x) {
 }
 
 ansi_style_from_r_color <- function(color, bg, num_colors, grey) {
-  ansi_style_from_rgb(col2rgb(color), bg, num_colors, grey)
+  ansi_style_from_rgb(grDevices::col2rgb(color), bg, num_colors, grey)
 }
 
 ansi_style_8_from_rgb <- function(rgb, bg) {

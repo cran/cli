@@ -38,20 +38,22 @@
 #' @section Classes:
 #'
 #' The default theme defines the following inline classes:
-#' * `emph` for emphasized text.
-#' * `strong` for strong importance.
-#' * `code` for a piece of code.
-#' * `pkg` for a package name.
-#' * `fun` for a function name.
 #' * `arg` for a function argument.
-#' * `key` for a keyboard key.
-#' * `file` for a file name.
-#' * `path` for a path (essentially the same as `file`).
+#' * `cls` for an S3, S4, R6 or other class name.
+#' * `code` for a piece of code.
 #' * `email` for an email address.
+#' * `emph` for emphasized text.
+#' * `envvar` for the name of an environment variable.
+#' * `field` for a generic field, e.g. in a named list.
+#' * `file` for a file name.
+#' * `fun` for a function name.
+#' * `key` for a keyboard key.
+#' * `path` for a path (essentially the same as `file`).
+#' * `pkg` for a package name.
+#' * `strong` for strong importance.
 #' * `url` for a URL.
 #' * `var` for a variable name.
-#' * `envvar` for the name of an environment variable.
-#' * `val` for a "value".
+#' * `val` for a generic "value".
 #'
 #' See examples below.
 #'
@@ -61,7 +63,7 @@
 #' ## Highlighting weird-looking values
 #'
 #' Often it is useful to highlight a weird file or path name, e.g. one
-#' that starts or ends with space characters. The buildin theme does this
+#' that starts or ends with space characters. The built-in theme does this
 #' for `.file`, `.path` and `.email` by default. You can highlight
 #' any string inline by adding the `.q` class to it.
 #'
@@ -75,20 +77,25 @@
 #'
 #' When cli performs inline text formatting, it automatically collapses
 #' glue substitutions, after formatting. This is handy to create lists of
-#' files, packages, etc. See examples below.
+#' files, packages, etc.
+#'
+#' By default cli truncates long vectors. The truncation limit is by default
+#' one hundred elements, but you can change it with the `vec_trunc` style.
+#'
+#' See examples below.
 #'
 #' @section Formatting values:
 #'
-#' The `val` inline class formats values. By default (c.f. the builtin
+#' The `val` inline class formats values. By default (c.f. the built-in
 #' theme), it calls the [cli_format()] generic function, with the current
 #' style as the argument. See [cli_format()] for examples.
 #'
 #' @section Escaping `{` and `}`:
 #'
 #' It might happen that you want to pass a string to `cli_*` functions,
-#' and you do not_ want command substitution in that string, because it
-#' might contain `}` and `{` characters. The simplest solution for this is
-#' referring to the string from a template:
+#' and you do _not_ want command substitution in that string, because it
+#' might contain `{` and `}` characters. The simplest solution for this is
+#' to refer to the string from a template:
 #'
 #' ```
 #' msg <- "Error in if (ncol(dat$y)) {: argument is of length zero"
@@ -144,6 +151,14 @@
 #' cli_text("Packages: {pkgs}.")
 #' cli_text("Packages: {.pkg {pkgs}}")
 #'
+#' ## Custom truncation, style set via cli_vec
+#' nms <- cli_vec(names(mtcars), list(vec_trunc = 5))
+#' cli_text("Column names: {nms}.")
+#'
+#' ## Classes are collapsed differently by default
+#' x <- Sys.time()
+#' cli_text("Hey {.var x} has class {.cls {class(x)}}")
+#'
 #' ## Escaping
 #' msg <- "Error in if (ncol(dat$y)) {: argument is of length zero"
 #' cli_alert_warning("{msg}")
@@ -192,7 +207,7 @@ NULL
 #' These form a stack, and the themes on the top of the stack take
 #' precedence, over themes in the bottom.
 #'
-#' 1. The cli package has a builtin theme. This is always active.
+#' 1. The cli package has a built-in theme. This is always active.
 #'    See [builtin_theme()].
 #' 2. When an app object is created via [start_app()], the caller can
 #'    specify a theme, that is added to theme stack. If no theme is
@@ -252,10 +267,15 @@ NULL
 #'   package) should always print as `.file` objects in cli.
 #' * `color`: Text color, an R color name or a HTML hexadecimal color. It
 #'   can be applied to most elements that are printed.
+#' * `collapse`: Specifies how to collapse a vector, before applying
+#'   styling. If a character string, then that is used as the separator.
+#'   If a function, then it is called, with the vector as the only
+#'   argument.
 #' * `digits`: Number of digits after the decimal point for numeric inline
 #'   element of class `.val`.
 #' * `fmt`: Generic formatter function that takes an input text and returns
-#'   formatted text. Can be applied to most elements.
+#'   formatted text. Can be applied to most elements. If colors are in use,
+#'   the input text provided to `fmt` already includes ANSI sequences.
 #' * `font-style`: If `"italic"` then the text is printed as cursive.
 #' * `font-weight`: If `"bold"`, then the text is printed in boldface.
 #' * `line-type`: Line type for [cli_rule()].
@@ -267,13 +287,18 @@ NULL
 #' * `start`: Integer number, the first element in an ordered list.
 #' * `string_quote`: Quoting character for inline elements of class `.val`.
 #' * `text-decoration`: If `"underline"`, then underlined text is created.
-#' * `transform`: A function to call on gluw substitutions, before
-#'   collapsing them.
-#' * `vec_last`: The last seperator when collapsing vectors.
+#' * `text-exdent`: Amound of indentation from the second line of wrapped
+#'    text.
+#' * `transform`: A function to call on glue substitutions, before
+#'   collapsing them. Note that `transform` is applied prior to
+#'   implementing color via ANSI sequences.
+#' * `vec_last`: The last separator when collapsing vectors.
 #' * `vec_sep`: The separator to use when collapsing vectors.
+#' * `vec_trunc`: Vectors longer than this will be truncated. Defaults to
+#'   100.
 #'
-#' More properties might be adder later. If you think that a properly is
-#' not applied properly to an alement, please open an issue about it in
+#' More properties might be added later. If you think that a property is
+#' not applied properly to an element, please open an issue about it in
 #' the cli issue tracker.
 #'
 #' @section Examples:
