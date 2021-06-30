@@ -61,7 +61,7 @@ test_that_cli("format_message", {
 
 test_that("format_error width in RStudio", {
   mockery::stub(format_error, "rstudio_detect", list(type = "rstudio_console"))
-  local_rng_version("3.5.0")
+  local_rng_version("3.3.0")
   set.seed(42)
   expect_snapshot(error = TRUE, local({
     len <- 26
@@ -112,4 +112,13 @@ test_that_cli(config = "ansi", "update_rstudio_color", {
     function() make_ansi_style("#008800")
   )
   expect_snapshot(cat(update_rstudio_color("color me interested")))
+})
+
+test_that("named first element", {
+  expect_snapshot(
+    format_error(c("*" = "foo", "*" = "bar"))
+  )
+  expect_snapshot(
+    format_warning(c("*" = "foo", "*" = "bar"))
+  )
 })

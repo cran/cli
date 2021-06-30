@@ -11,7 +11,7 @@ cli_status(
   .keep = FALSE,
   .auto_close = TRUE,
   .envir = parent.frame(),
-  .auto_result = c("clear", "done", "failed")
+  .auto_result = c("clear", "done", "failed", "auto")
 )
 }
 \arguments{

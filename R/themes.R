@@ -58,7 +58,8 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
   list(
     body = list(
       "class-map" = list(
-        fs_path = "file"
+        fs_path = "file",
+        "cli-progress-bar" = "progress-bar"
       )
     ),
 
@@ -127,10 +128,10 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     ul = list(
       "list-style-type" = function() symbol$bullet
     ),
-    "ul ul" = list(
-      "list-style-type" = function() symbol$circle
-    ),
-    "ul ul ul" = list("list-style-type" = function() symbol$line),
+
+    # these are tags in HTML, but in cli they are inline
+    span.dt = list(after = ": "),
+    span.dd = list(),
 
     # This means that list elements have a margin, if they are nested
     "ul ul li" = list("margin-left" = 2),
@@ -161,7 +162,7 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     span.strong = list("font-weight" = "bold"),
     span.code = theme_code_tick(dark),
 
-    span.q   = list(fmt = quote_weird_name),
+    span.q   = list(fmt = quote_weird_name2),
     span.pkg = list(color = "blue"),
     span.fn = theme_function(dark),
     span.fun = theme_function(dark),
@@ -174,18 +175,29 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
     span.url = list(before = "<", after = ">", color = "blue",
                     "font-style" = "italic"),
     span.var = theme_code_tick(dark),
+    span.col = theme_code_tick(dark),
+    span.str = list(fmt = encode_string),
     span.envvar = theme_code_tick(dark),
     span.val = list(
       transform = function(x, ...) cli_format(x, ...),
       color = "blue"
     ),
     span.field = list(color = "green"),
-    span.cls = list(collapse = "/", color = "blue", before = "<", after = ">"
-    )
+    span.cls = list(collapse = "/", color = "blue", before = "<", after = ">"),
+    "span.progress-bar" = list(
+      transform = theme_progress_bar,
+      color = "green"
+    ),
+    span.or = list(vec_sep2 = " or ", vec_last = ", or "),
+    span.timestamp = list(before = "[", after = "]", color = "grey")
   )
 }
 
-quote_weird_name <- function(x) {
+encode_string <- function(x) {
+  encodeString(x, quote = "\"")
+}
+
+quote_weird_name0 <- function(x) {
   x <- gsub(" ", "\u00a0", x)
   x2 <- ansi_strip(x)
 
@@ -213,11 +225,24 @@ quote_weird_name <- function(x) {
     }
   }
 
-  if (wfst || wlst || num_ansi_colors() == 1) {
-    x <- paste0("'", x, "'")
-  }
+  list(x, wfst || wlst)
+}
 
-  x
+quote_weird_name <- function(x) {
+  x2 <- quote_weird_name0(x)
+  if (x2[[2]] || num_ansi_colors() == 1) {
+    x2[[1]] <- paste0("'", x2[[1]], "'")
+  }    
+  x2[[1]]
+}
+
+quote_weird_name2 <- function(x) {
+  x2 <- quote_weird_name0(x)
+  paste0("\"", x2[[1]], "\"")
+}
+
+theme_progress_bar <- function(x, app, style) {
+  make_progress_bar(x$current / x$total, style = style)
 }
 
 detect_dark_theme <- function(dark) {

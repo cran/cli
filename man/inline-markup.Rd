@@ -41,6 +41,8 @@ The default theme defines the following inline classes:
 \item \code{arg} for a function argument.
 \item \code{cls} for an S3, S4, R6 or other class name.
 \item \code{code} for a piece of code.
+\item \code{dt} is used for the terms in a definition list (\code{\link[=cli_dl]{cli_dl()}}).
+\item \code{dd} is used for the descriptions in a definition list (\code{\link[=cli_dl]{cli_dl()}}).
 \item \code{email} for an email address.
 \item \code{emph} for emphasized text.
 \item \code{envvar} for the name of an environment variable.
@@ -123,6 +125,19 @@ cli_text("Will install \{length(pkgs)\} package\{?s\}: \{.pkg \{pkgs\}\}")
 }
 
 See \link{pluralization} for details.
+}
+
+\section{Wrapping}{
+
+
+Most cli containers wrap the text to width the container's width,
+while observing margins requested by the theme.
+
+To avoid a line break, you can use the UTF_8 non-breaking space
+character: \verb{\\u00a0}. cli will not break a line here.
+
+To force a line break, insert a form feed character: \verb{\\f} or
+\verb{\\u000c}. cli will insert a line break there.
 }
 
 \examples{

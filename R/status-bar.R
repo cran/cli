@@ -46,20 +46,25 @@ cli_status <- function(msg, msg_done = paste(msg, "... done"),
                        msg_failed = paste(msg, "... failed"),
                        .keep = FALSE, .auto_close = TRUE,
                        .envir = parent.frame(),
-                       .auto_result = c("clear", "done", "failed")) {
+                       .auto_result = c("clear", "done", "failed", "auto")) {
+
+  id <- new_uuid()
   cli__message(
     "status",
     list(
-      id = NULL,
+      id = id,
       msg = glue_cmd(msg, .envir = .envir),
       msg_done = glue_cmd(msg_done, .envir = .envir),
       msg_failed = glue_cmd(msg_failed, .envir = .envir),
       keep = .keep,
-      auto_result = match.arg(.auto_result)
+      auto_result = match.arg(.auto_result),
+      globalenv = identical(.envir, .GlobalEnv)
     ),
     .auto_close = .auto_close,
     .envir = .envir
   )
+
+  invisible(id)
 }
 
 #' Clear the status bar
@@ -89,7 +94,7 @@ cli_status_clear <- function(id = NULL, result = c("clear", "done", "failed"),
     "status_clear",
     list(
       id = id %||% NA_character_,
-      result = match.arg(result),
+      result = match.arg(result[1], c("clear", "done", "failed", "auto")),
       msg_done = if (!is.null(msg_done)) glue_cmd(msg_done, .envir = .envir),
       msg_failed = if (!is.null(msg_failed)) glue_cmd(msg_failed, .envir = .envir)
     )
@@ -182,7 +187,7 @@ cli_status_update <- function(id = NULL, msg = NULL, msg_done = NULL,
 
 cli_process_start <- function(msg, msg_done = paste(msg, "... done"),
                               msg_failed = paste(msg, "... failed"),
-                              on_exit = c("failed", "done"),
+                              on_exit = c("auto", "failed", "done"),
                               msg_class = "alert-info",
                               done_class = "alert-success",
                               failed_class = "alert-danger",
@@ -245,7 +250,7 @@ cli_process_failed <- function(id = NULL, msg = NULL, msg_failed = NULL,
 # -----------------------------------------------------------------------
 
 clii_status <- function(app, id, msg, msg_done, msg_failed, keep,
-                        auto_result) {
+                        auto_result, globalenv) {
 
   app$status_bar[[id]] <- list(
     content = "",
@@ -254,6 +259,9 @@ clii_status <- function(app, id, msg, msg_done, msg_failed, keep,
     keep = keep,
     auto_result = auto_result
   )
+  if (isTRUE(getOption("cli.hide_cursor", TRUE)) && !isTRUE(globalenv)) {
+    ansi_hide_cursor(app$output)
+  }
   clii_status_update(app, id, msg, msg_done = NULL, msg_failed = NULL)
 }
 
@@ -264,6 +272,15 @@ clii_status_clear <- function(app, id, result, msg_done, msg_failed) {
   ## If no active status bar, then ignore
   if (is.na(id)) return(invisible())
   if (! id %in% names(app$status_bar)) return(invisible())
+
+  if (result == "auto") {
+    r1 <- random_marker
+    if (identical(returnValue(r1), r1)) {
+      result <- "failed"
+    } else {
+      result <- "done"
+    }
+  }
 
   if (result == "done") {
     msg <- msg_done %||% app$status_bar[[id]]$msg_done
@@ -285,13 +302,16 @@ clii_status_clear <- function(app, id, result, msg_done, msg_failed) {
       ## Not keep? Remove it
       clii__clear_status_bar(app)
     }
+    if (isTRUE(getOption("cli.hide_cursor", TRUE))) {
+      ansi_show_cursor(app$output)
+    }
 
   } else {
     if (app$status_bar[[id]]$keep) {
       ## Keep?
       clii__clear_status_bar(app)
       app$cat(paste0(app$status_bar[[id]]$content, "\n"))
-      app$cat(paste0(app$status_bar[[1]]$content))
+      app$cat(paste0(app$status_bar[[1]]$content, "\r"))
 
     } else {
       ## Not keep? Nothing to output
@@ -302,7 +322,9 @@ clii_status_clear <- function(app, id, result, msg_done, msg_failed) {
   app$status_bar[[id]] <- NULL
 
   ## Switch to the previous one
-  if (length(app$status_bar)) app$cat(paste0(app$status_bar[[1]]$content))
+  if (length(app$status_bar)) {
+    app$cat(paste0(app$status_bar[[1]]$content, "\r"))
+  }
 }
 
 clii_status_update <- function(app, id, msg, msg_done, msg_failed) {
@@ -340,13 +362,18 @@ clii_status_update <- function(app, id, msg, msg_done, msg_failed) {
   ## to the content to make sure we clear up residual content.
   output <- get_real_output(app$output)
   if (is_ansi_tty(output)) {
-    app$cat(paste0("\r", content, ANSI_EL))
+    app$cat(paste0("\r", content, ANSI_EL, "\r"))
   } else if (is_dynamic_tty(output)) {
     nsp <- max(ansi_nchar(current) - ansi_nchar(content), 0)
-    app$cat(paste0("\r", content, strrep(" ", nsp)))
+    app$cat(paste0("\r", content, strrep(" ", nsp), "\r"))
   } else {
     app$cat(paste0(content, "\n"))
   }
+
+  ## Reset timer
+  .Call(clic_tick_reset)
+
+  invisible()
 }
 
 clii__clear_status_bar <- function(app) {

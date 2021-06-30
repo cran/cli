@@ -3,7 +3,7 @@ call_if_fun <- function(x) {
   if (is.function(x)) x() else x
 }
 
-clii__xtext <- function(app, text, .list, indent, padding) {
+clii__xtext <- function(app, text, .list, indent, padding, ln = TRUE) {
   style <- app$get_current_style()
   text <- app$inline(text, .list = .list)
   exdent <- style$`text-exdent` %||% 0L
@@ -56,16 +56,24 @@ clii__cat_ln <- function(app, lines, indent, padding) {
   ## zero out margin
   app$margin <- 0
 
-  if (length(app$status_bar)) clii__clear_status_bar(app)
+  signal <- !identical(app$signal, FALSE)
+  if (signal && length(app$status_bar)) clii__clear_status_bar(app)
   app$cat(paste0(paste0(lines, "\n"), collapse = ""))
-  if (length(app$status_bar)) app$cat(paste0(app$status_bar[[1]]$content))
+  if (signal && length(app$status_bar)) {
+    app$cat(paste0(app$status_bar[[1]]$content, "\r"))
+  }
 }
 
 clii__vspace <- function(app, n) {
   if (app$margin < n) {
     sp <- strrep("\n", n - app$margin)
+    signal <- !identical(app$signal, FALSE)
+    if (signal && length(app$status_bar)) clii__clear_status_bar(app)
     clii__message(sp, appendLF = FALSE, output = app$output, signal = app$signal)
     app$margin <- n
+    if (signal && length(app$status_bar)) {
+      app$cat(paste0(app$status_bar[[1]]$content, "\r"))
+    }
   }
 }
 
@@ -82,7 +90,7 @@ get_real_output <- function(output) {
   output
 }
 
-clii__message <- function(..., domain = NULL, appendLF = TRUE,
+clii__message <- function(..., domain = NA, appendLF = TRUE,
                           output = stderr(), signal = TRUE) {
 
   msg <- .makeMessage(..., domain = domain, appendLF = appendLF)
@@ -92,14 +100,23 @@ clii__message <- function(..., domain = NULL, appendLF = TRUE,
   msg <- gsub("\u00a0", " ", msg, fixed = TRUE)
 
   if (identical(signal, FALSE)) {
-    cat(msg, file = output, sep = "")
+    safe_cat0(msg, file = output)
 
   } else {
     withRestarts(muffleMessage = function() NULL, {
       cond <- simpleMessage(msg)
       class(cond) <- c("cliMessage", class(cond))
       signalCondition(cond)
-      cat(msg, file = output, sep = "")
+      safe_cat0(msg, file = output)
     })
+  }
+}
+
+safe_cat0 <- function(x, file) {
+  if (inherits(file, "rawConnection")) {
+    x <- enc2utf8(x)
+    writeBin(charToRaw(x), file)
+  } else {
+    cat(x, file = file, sep = "")
   }
 }

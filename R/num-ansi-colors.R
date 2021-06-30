@@ -167,7 +167,9 @@ detect_tty_colors <- function() {
   win10_build_ok <- win10_build() >= 16257
   if (os_type() == "windows" && win10_build_ok &&
       rstudio$detect()$type == "rstudio_terminal") {
-   return(8L)
+    # this is rather weird, but echo turns on color support :D
+    system2("cmd", c("/c", "echo 1 >NUL"))
+    return(8L)
   }
 
   # Windows terminal with native color support?
@@ -243,7 +245,7 @@ emacs_version <- function() {
 }
 
 win10_build <- function() {
-  os <- utils::sessionInfo()$running
+  os <- utils::sessionInfo()$running %||% ""
   if (!grepl("^Windows 10 ", os)) return(0L)
   mch <- re_match(os, "[(]build (?<build>[0-9]+)[)]")
   mch <- suppressWarnings(as.integer(mch))

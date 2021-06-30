@@ -41,6 +41,8 @@
 #' * `arg` for a function argument.
 #' * `cls` for an S3, S4, R6 or other class name.
 #' * `code` for a piece of code.
+#' * `dt` is used for the terms in a definition list ([cli_dl()]).
+#' * `dd` is used for the descriptions in a definition list ([cli_dl()]).
 #' * `email` for an email address.
 #' * `emph` for emphasized text.
 #' * `envvar` for the name of an environment variable.
@@ -121,6 +123,17 @@
 #' ```
 #'
 #' See [pluralization] for details.
+#'
+#' @section Wrapping:
+#'
+#' Most cli containers wrap the text to width the container's width,
+#' while observing margins requested by the theme.
+#'
+#' To avoid a line break, you can use the UTF_8 non-breaking space
+#' character: `\u00a0`. cli will not break a line here.
+#'
+#' To force a line break, insert a form feed character: `\f` or
+#' `\u000c`. cli will insert a line break there.
 #'
 #' @name inline-markup
 #' @examples

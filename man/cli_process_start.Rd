@@ -10,7 +10,7 @@ cli_process_start(
   msg,
   msg_done = paste(msg, "... done"),
   msg_failed = paste(msg, "... failed"),
-  on_exit = c("failed", "done"),
+  on_exit = c("auto", "failed", "done"),
   msg_class = "alert-info",
   done_class = "alert-success",
   failed_class = "alert-danger",

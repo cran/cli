@@ -194,5 +194,39 @@
       cli_div(theme = list(.val = list(digits = 2)))
       cli_text("Some random numbers: {.val {runif(4)}}.")
     Message <cliMessage>
-      Some random numbers: 0.13, 0.66, 0.71, and 0.46.
+      Some random numbers: 0.91, 0.94, 0.29, and 0.83.
+
+# .q always double quotes
+
+    Code
+      cli_text("just a {.q string}, nothing more")
+    Message <cliMessage>
+      just a "string", nothing more
+
+# .or
+
+    Code
+      cli_text("{.or {letters[1:5]}}")
+    Message <cliMessage>
+      a, b, c, d, or e
+
+---
+
+    Code
+      cli_text("{.or {letters[1:2]}}")
+    Message <cliMessage>
+      a or b
+
+# line breaks
+
+    Code
+      ansi_strwrap(txt2, width = 60)
+    Output
+      <ansi_string>
+      [1] Cupidatat deserunt culpa enim deserunt minim aliqua tempor
+      [2] fugiat cupidatat laboris officia esse ex aliqua. Ullamco  
+      [3] mollit adipisicing anim.                                  
+      [4] Cupidatat deserunt culpa enim deserunt minim aliqua tempor
+      [5] fugiat cupidatat laboris officia esse ex aliqua. Ullamco  
+      [6] mollit adipisicing anim.                                  
 

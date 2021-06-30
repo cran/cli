@@ -43,7 +43,7 @@ cli__fmt <- function(record, collapse = FALSE, strip_newline = FALSE,
   old <- app$output
   on.exit(app$output <- old, add = TRUE)
   on.exit(app$signal <- NULL, add = TRUE)
-  out <- rawConnection(raw(1000), open = "w")
+  out <- rawConnection(raw(1000), open = "wb")
   on.exit(close(out), add = TRUE)
   app$output <- out
   app$signal <- FALSE
@@ -53,6 +53,7 @@ cli__fmt <- function(record, collapse = FALSE, strip_newline = FALSE,
   }
 
   txt <- rawToChar(rawConnectionValue(out))
+  Encoding(txt) <- "UTF-8"
   if (!collapse) {
     txt <- unlist(strsplit(txt, "\n", fixed = TRUE))
   } else if (strip_newline) {
@@ -66,6 +67,24 @@ cli__fmt <- function(record, collapse = FALSE, strip_newline = FALSE,
 fmt <- function(expr, collapse = FALSE, strip_newline = FALSE, app = NULL) {
   rec <- cli__rec(expr)
   cli__fmt(rec, collapse, strip_newline, app)
+}
+
+#' Format and returns a line of text
+#'
+#' You can use this function to format a line of cli text, without emitting
+#' it to the screen. It uses [cli_text()] internally.
+#'
+#' @param ... Passed to [cli_text()].
+#' @return Character scalar, the formatted string.
+#'
+#' @export
+#' @examples
+#' format_inline("This is a message for {.emph later}.")
+
+format_inline <- function(...) {
+  opts <- options(cli.width = Inf)
+  on.exit(options(opts), add = TRUE)
+  fmt(cli_text(...))
 }
 
 #' CLI text

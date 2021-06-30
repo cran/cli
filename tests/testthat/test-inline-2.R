@@ -73,10 +73,35 @@ test_that("cli_format", {
 
 test_that("cli_format() is used for .val", {
   withr::local_options(cli.width = 60)
-  local_rng_version("3.5.0")
+  local_rng_version("3.3.0")
   set.seed(42)
   expect_snapshot({
     cli_div(theme = list(.val = list(digits = 2)))
     cli_text("Some random numbers: {.val {runif(4)}}.")
   })
+})
+
+test_that(".q always double quotes", {
+  expect_snapshot(
+    cli_text("just a {.q string}, nothing more")
+  )
+})
+
+test_that(".or", {
+  expect_snapshot(
+    cli_text("{.or {letters[1:5]}}")
+  )
+  expect_snapshot(
+    cli_text("{.or {letters[1:2]}}")
+  )
+})
+
+test_that("line breaks", {
+  txt <- paste(
+    "Cupidatat deserunt culpa enim deserunt minim aliqua tempor fugiat",
+    "cupidatat laboris officia esse ex aliqua. Ullamco mollit adipisicing",
+    "anim."
+  )
+  txt2 <- paste0(txt, "\f", txt)
+  expect_snapshot(ansi_strwrap(txt2, width = 60))
 })
