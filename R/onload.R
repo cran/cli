@@ -6,8 +6,8 @@ NULL
 
 dummy <- function() { }
 
-cli_timer_interactive <- 200L
-cli_timer_non_interactive <- 3000L
+cli_timer_dynamic <- 200L
+cli_timer_non_dynamic <- 3000L
 
 clienv <- new.env(parent = emptyenv())
 clienv$pid <- Sys.getpid()
@@ -41,10 +41,10 @@ task_callback <- NULL
 
   tt <- as.integer(Sys.getenv("CLI_TICK_TIME", NA_character_))
   if (is.na(tt)) {
-    tt <- if (interactive()) {
-      cli_timer_interactive
+    tt <- if (interactive() || is_dynamic_tty()) {
+      cli_timer_dynamic
     } else {
-      cli_timer_non_interactive
+      cli_timer_non_dynamic
     }
   }
 
@@ -55,6 +55,9 @@ task_callback <- NULL
     clienv$tick_time,
     clienv$speed_time
   )
+
+  # For valgrind: https://github.com/r-lib/cli/issues/311
+  reg.finalizer(asNamespace("cli"), function(x) .Call(clic_unload), TRUE)
 
   if (getRversion() >= "3.5.0") {
     `__cli_update_due` <<- .Call(clic_make_timer);

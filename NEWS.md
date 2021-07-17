@@ -1,3 +1,8 @@
+# cli 3.0.1
+
+* `ansi_strtrim()` now correctly keeps `NA` values (#309).
+
+* `format_inline()` now uses the correct environment (@rundel, #314).
 
 # cli 3.0.0
 
