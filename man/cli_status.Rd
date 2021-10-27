@@ -2,7 +2,7 @@
 % Please edit documentation in R/status-bar.R
 \name{cli_status}
 \alias{cli_status}
-\title{Update the status bar}
+\title{Update the status bar (superseded)}
 \usage{
 cli_status(
   msg,
@@ -36,7 +36,7 @@ screen is scrolled up if needed). If \code{FALSE}, then this status bar
 is deleted.}
 
 \item{.auto_close}{Whether to clear the status bar when the calling
-function finishes (or ‘.envir’ is removed from the stack, if
+function finishes (or \code{.envir} is removed from the stack, if
 specified).}
 
 \item{.envir}{Environment to evaluate the glue expressions in. It is
@@ -48,6 +48,10 @@ also used to auto-clear the status bar if \code{.auto_close} is \code{TRUE}.}
 The id of the new status bar container element, invisibly.
 }
 \description{
+\strong{The \verb{cli_status_*()} functions are superseded by
+the \code{\link[=cli_progress_message]{cli_progress_message()}} and \code{\link[=cli_progress_step]{cli_progress_step()}} functions,
+because they have a better default behavior.}
+
 The status bar is the last line of the terminal. cli apps can use this
 to show status information, progress bars, etc. The status bar is kept
 intact by all semantic cli output.
@@ -62,8 +66,8 @@ again. cli automates much of this, via the \code{msg_done}, \code{msg_failed}, a
 \code{.auto_result} arguments. See examples below.
 }
 \seealso{
-\code{\link[=cli_process_start]{cli_process_start()}} for a higher level interface to the
-status bar, that adds automatic styling.
+The \code{\link[=cli_progress_message]{cli_progress_message()}} and \code{\link[=cli_progress_step]{cli_progress_step()}}
+functions, for a superior API.
 
 Other status bar: 
 \code{\link{cli_process_start}()},

@@ -3,6 +3,10 @@ is_string <- function(x) {
   is.character(x) && length(x) == 1 && !is.na(x)
 }
 
+is_flag <- function(x) {
+  is.logical(x) && length(x) == 1 && !is.na(x)
+}
+
 is_border_style <- function(x) {
   is_string(x) && x %in% rownames(box_styles())
 }
@@ -27,4 +31,8 @@ is_tree_style <- function(x) {
     !is.null(names(x)) &&
     all(sort(names(x)) == sort(c("h", "v", "l", "j"))) &&
     all(sapply(x, is_string))
+}
+
+is_named <- function(x) {
+  !is.null(names(x))
 }

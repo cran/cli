@@ -13,7 +13,7 @@
 #'   `NA` if the style is not used.
 #'
 #' @export
-#' @seealso themes
+#' @seealso [themes]
 
 cli_list_themes <- function() {
   app <- default_app() %||% start_app()
@@ -41,6 +41,42 @@ clii_remove_theme <- function(app, id) {
 #'
 #' This theme is always active, and it is at the bottom of the theme
 #' stack. See [themes].
+#'
+#' # Showcase
+#'
+#' ```{asciicast builtin-theme}
+#' cli_h1("Heading 1")
+#' cli_h2("Heading 2")
+#' cli_h3("Heading 3")
+#'
+#' cli_par()
+#' cli_alert_danger("Danger alert")
+#' cli_alert_warning("Warning alert")
+#' cli_alert_info("Info alert")
+#' cli_alert_success("Success alert")
+#' cli_alert("Alert for starting a process or computation",
+#'   class = "alert-start")
+#' cli_end()
+#'
+#' cli_text("Packages and versions: {.pkg cli} {.version 1.0.0}.")
+#' cli_text("Time intervals: {.timestamp 3.4s}")
+#'
+#' cli_text("{.emph Emphasis} and  {.strong strong emphasis}")
+#'
+#' cli_text("This is a piece of code: {.code sum(x) / length(x)}")
+#' cli_text("Function names: {.fn cli::simple_theme}")
+#'
+#' cli_text("Files: {.file /usr/bin/env}")
+#' cli_text("URLs: {.url https://r-project.org}")
+#'
+#' cli_h2("Longer code chunk")
+#' cli_par(class = "code R")
+#' cli_verbatim(
+#'   '# window functions are useful for grouped mutates',
+#'   'mtcars %>%',
+#'   '  group_by(cyl) %>%',
+#'   '  mutate(rank = min_rank(desc(mpg)))')
+#' ```
 #'
 #' @seealso [themes], [simple_theme()].
 #' @return A named list, a CLI theme.
@@ -121,7 +157,6 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
       before = function(x) paste0(symbol$arrow_right, " ")
     ),
     ".memo .memo-item-1" = list(
-      "font-weight" = "bold"
     ),
 
     par = list("margin-top" = 0, "margin-bottom" = 1),
@@ -232,7 +267,7 @@ quote_weird_name <- function(x) {
   x2 <- quote_weird_name0(x)
   if (x2[[2]] || num_ansi_colors() == 1) {
     x2[[1]] <- paste0("'", x2[[1]], "'")
-  }    
+  }
   x2[[1]]
 }
 
@@ -281,7 +316,7 @@ format_r_code <- function(dark) {
   function(x) {
     x <- ansi_strip(x)
     lines <- unlist(strsplit(x, "\n", fixed = TRUE))
-    tryCatch(prettycode::highlight(lines), error = function(x) lines)
+    code_highlight(lines)
   }
 }
 
@@ -376,7 +411,7 @@ merge_embedded_styles <- function(old, new) {
 #' * Type selectors, e.g. `input` selects all `<input>` elements.
 #' * Class selectors, e.g. `.index` selects any element that has a class
 #'   of "index".
-#' * ID selector. `#toc` will match the element that has the ID "toc".
+#' * ID selector. `#toc` will match the element that has the ID `"toc"`.
 #'
 #' Combinators:
 #'
@@ -425,7 +460,7 @@ parse_selector_node <- function(x) {
 #' * The id of the container is missing or unique.
 #' * The tag of the container is unique.
 #' * If the selector specifies an id, it matches the id of the container.
-#' * If the selector specifies a tag, it matxhes the tag of the container.
+#' * If the selector specifies a tag, it matches the tag of the container.
 #' * If the selector specifies class names, the container has all these
 #'   classes.
 #'

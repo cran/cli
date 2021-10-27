@@ -31,26 +31,28 @@
 #'
 #' ### `logger`
 #'
-#' Log progress updates to the screeen, with one line for each update, with
+#' Log progress updates to the screen, with one line for each update and with
 #' time stamps. This handler is always able to handle all progress bars.
 #'
 #' ### `progressr`
 #'
-#' Use the progressr package to create progress bars. This handler is
-#' always able to handle all progress bars. (The progressr package needs
-#' to be installed.)
+#' Use the progressr package to create
+#' progress bars. This handler is always able to handle all progress bars.
+#' (The progressr package needs to be installed.)
 #'
 #' ### `rstudio`
 #'
-#' Use RStudio's job panel to show the progress bars. This handler is
-#' available at the RStudio console, in recent versions of RStudio.
+#' Use [RStudio's job panel](https://blog.rstudio.com/2019/03/14/rstudio-1-2-jobs/)
+#' to show the progress bars. This handler is available at the RStudio console,
+#' in recent versions of RStudio.
 #'
 #' ### `say`
 #'
-#' Use the macOS command line `say` command to announce progress events
-#' in speech. Set the `cli.progress_say_frequency` option to set the
-#' minimum delay between `say` invocations, the default is three seconds.
-#' This handler is available on macOS, if the `say` command is on the path.
+#' Use the macOS `say` command to announce progress events in speech (type
+#' `man say` on a terminal for more info). Set the `cli.progress_say_frequency`
+#' option to set the minimum delay between `say` invocations, the default is
+#' three seconds. This handler is available on macOS, if the `say` command is
+#' on the path.
 #'
 #' The external command and its arguments can be configured with options:
 #'
@@ -62,13 +64,15 @@
 #'
 #' ### `shiny`
 #'
-#' Use shiny's progress bars. This handler is available if a shiny app is
-#' running.
+#' Use [shiny's progress bars][shiny::Progress]. This handler is available if a
+#' shiny app is running.
 #'
 #' @return `cli_progress_builtin_handlers()` returns the names of the
 #' currently supported progress handlers.
 #'
 #' @export
+
+# TODO: examples
 
 cli_progress_builtin_handlers <- function() {
   names(builtin_handlers())
@@ -123,11 +127,12 @@ builtin_handler_cli <- list(
         }
         cli_status_clear(bar$cli_statusbar, result = "clear", .envir = .envir)
       } else {
+        if (result == "done" && !is.na(bar$total)) bar$current <- bar$total
         cli_status_clear(
           bar$cli_statusbar,
           result = result,
-          msg_done = bar$format_done,
-          msg_failed = bar$format_failed,
+          msg_done = bar$format_done %||% bar$format,
+          msg_failed = bar$format_failed %||% bar$format,
           .envir = .envir
         )
       }
@@ -304,7 +309,7 @@ builtin_handler_rstudio <- list(
 # ------------------------------------------------------------------------
 
 shiny_detail <- function(bar, .envir) {
-  if (is.null(bar$format_orig)) {
+  status <- if (is.null(bar$format_orig)) {
     bar$status %||% ""
   } else {
     fmt(
@@ -313,6 +318,19 @@ shiny_detail <- function(bar, .envir) {
       strip_newline = TRUE
     )
   }
+  output <- bar$shiny_output %||% ""
+  paste0(
+    status,
+    if (status != "" && output != "") "\n",
+    output
+  )
+}
+
+last_lines <- function(txt, keep = 5) {
+  txt <- sub("^\n*", "", txt)
+  txt <- sub("\n*$", "", txt)
+  lines <- strwrap(txt, width = 40)
+  paste(utils::tail(lines, keep), collapse = "\n")
 }
 
 builtin_handler_shiny <- list(
@@ -348,9 +366,16 @@ builtin_handler_shiny <- list(
       bar$shiny_progress$close()
     }
     bar$shiny_progress <- NULL
-  }
+  },
 
-  # TODO: can we do anything with `output`?
+  output = function(bar, .envir, text) {
+    bar$shiny_output <-
+      last_lines(paste0(bar$shiny_output, " \u2022 ", text))
+    bar$shiny_progress$set(
+      value = bar$current,
+      detail = shiny_detail(bar, .envir)
+    )
+  }
 )
 
 # ------------------------------------------------------------------------

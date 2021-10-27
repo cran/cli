@@ -2,7 +2,7 @@
 % Please edit documentation in R/cliapp-docs.R
 \name{themes}
 \alias{themes}
-\title{CLI themes}
+\title{About cli themes}
 \description{
 CLI elements can be styled via a CSS-like language of selectors and
 properties. Only a small subset of CSS3 is supported, and
@@ -21,7 +21,7 @@ See \code{\link[=builtin_theme]{builtin_theme()}}.
 specify a theme, that is added to theme stack. If no theme is
 specified for \code{\link[=start_app]{start_app()}}, the content of the \code{cli.theme} option
 is used. Removed when the corresponding app stops.
-\item The user may speficy a theme in the \code{cli.user_theme} option. This
+\item The user may specify a theme in the \code{cli.user_theme} option. This
 is added to the stack \emph{after} the app's theme (step 2.), so it can
 override its settings. Removed when the app that added it stops.
 \item Themes specified explicitly in \code{\link[=cli_div]{cli_div()}} elements. These are
@@ -104,7 +104,7 @@ as the margins, but this might change later.
 \item \code{start}: Integer number, the first element in an ordered list.
 \item \code{string_quote}: Quoting character for inline elements of class \code{.val}.
 \item \code{text-decoration}: If \code{"underline"}, then underlined text is created.
-\item \code{text-exdent}: Amound of indentation from the second line of wrapped
+\item \code{text-exdent}: Amount of indentation from the second line of wrapped
 text.
 \item \code{transform}: A function to call on glue substitutions, before
 collapsing them. Note that \code{transform} is applied prior to

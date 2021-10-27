@@ -23,6 +23,14 @@
       i There are 26 elements.
       x You've tried to subset element 100.
 
+---
+
+    Code
+      err$cli_bullets
+    Output
+                                                                                    x 
+               "`n` must be a numeric vector" "You've supplied a <character> vector." 
+
 # cli_abort [ansi]
 
     Code
@@ -31,8 +39,8 @@
         cli_abort(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
       })
     Error <rlang_error>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31mx[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -44,9 +52,19 @@
           x = "You've tried to subset element {idx}."))
       })
     Error <rlang_error>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
+
+---
+
+    Code
+      err$cli_bullets
+    Output
+                                                                     
+      "\033[30m\033[47m`n`\033[49m\033[39m must be a numeric vector" 
+                                                                   x 
+             "You've supplied a \033[34m<character>\033[39m vector." 
 
 # cli_abort [unicode]
 
@@ -73,6 +91,14 @@
       ℹ There are 26 elements.
       ✖ You've tried to subset element 100.
 
+---
+
+    Code
+      err$cli_bullets
+    Output
+                                                                                    x 
+               "`n` must be a numeric vector" "You've supplied a <character> vector." 
+
 # cli_abort [fancy]
 
     Code
@@ -81,8 +107,8 @@
         cli_abort(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
       })
     Error <rlang_error>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31m✖[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -94,9 +120,19 @@
           x = "You've tried to subset element {idx}."))
       })
     Error <rlang_error>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
+
+---
+
+    Code
+      err$cli_bullets
+    Output
+                                                                     
+      "\033[30m\033[47m`n`\033[49m\033[39m must be a numeric vector" 
+                                                                   x 
+             "You've supplied a \033[34m<character>\033[39m vector." 
 
 # cli_warn [plain]
 
@@ -121,14 +157,24 @@
       i There are 26 elements.
       x You've tried to subset element 100.
 
+---
+
+    Code
+      wrn$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
+
 # cli_warn [ansi]
 
     Code
       n <- "boo"
       cli_warn(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
     Warning <warning>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31mx[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -140,9 +186,19 @@
           x = "You've tried to subset element {idx}."))
       })
     Warning <warning>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
+
+---
+
+    Code
+      wrn$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
 
 # cli_warn [unicode]
 
@@ -167,14 +223,24 @@
       ℹ There are 26 elements.
       ✖ You've tried to subset element 100.
 
+---
+
+    Code
+      wrn$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
+
 # cli_warn [fancy]
 
     Code
       n <- "boo"
       cli_warn(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
     Warning <warning>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31m✖[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -186,9 +252,19 @@
           x = "You've tried to subset element {idx}."))
       })
     Warning <warning>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
+
+---
+
+    Code
+      wrn$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
 
 # cli_inform [plain]
 
@@ -217,6 +293,16 @@
       i There are 26 elements.
       x You've tried to subset element 100.
 
+---
+
+    Code
+      tail(inf, 1)[[1]]$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
+
 # cli_inform [ansi]
 
     Code
@@ -225,8 +311,8 @@
     Message <cliMessage>
       
     Message <message>
-      [1m[22m[30m[47m[30m[47m`n`[47m[30m[49m[39m must be a numeric vector
-      [31mx[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -243,6 +329,16 @@
       [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
+
+---
+
+    Code
+      tail(inf, 1)[[1]]$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
 
 # cli_inform [unicode]
 
@@ -271,6 +367,16 @@
       ℹ There are 26 elements.
       ✖ You've tried to subset element 100.
 
+---
+
+    Code
+      tail(inf, 1)[[1]]$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
+
 # cli_inform [fancy]
 
     Code
@@ -279,8 +385,8 @@
     Message <cliMessage>
       
     Message <message>
-      [1m[22m[30m[47m[30m[47m`n`[47m[30m[49m[39m must be a numeric vector
-      [31m✖[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -297,6 +403,16 @@
       [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
+
+---
+
+    Code
+      tail(inf, 1)[[1]]$cli_bullets
+    Output
+                                                                                i 
+          "Must index an existing element:"              "There are 26 elements." 
+                                          x 
+      "You've tried to subset element 100." 
 
 # cli_abort width in RStudio
 

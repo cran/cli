@@ -1,5 +1,6 @@
 
 test_that_cli("cli_abort", {
+  withr::local_options(cli_theme_dark = FALSE)
   expect_snapshot(error = TRUE, local({
     n <- "boo"
     cli_abort(c(
@@ -17,9 +18,20 @@ test_that_cli("cli_abort", {
       "x" = "You've tried to subset element {idx}."
     ))
   }))
+
+  n <- "boo"
+  err <- tryCatch(
+    cli_abort(c(
+      "{.var n} must be a numeric vector",
+      "x" = "You've supplied a {.cls {class(n)}} vector."
+    )),
+    error = function(e) e
+  )
+  expect_snapshot(err$cli_bullets)
 })
 
 test_that_cli("cli_warn", {
+  withr::local_options(cli_theme_dark = FALSE)
   expect_snapshot({
     n <- "boo"
     cli_warn(c(
@@ -37,6 +49,18 @@ test_that_cli("cli_warn", {
       "x" = "You've tried to subset element {idx}."
     ))
   }))
+
+  len <- 26
+  idx <- 100
+  wrn <- tryCatch(
+    cli_warn(c(
+            "Must index an existing element:",
+      "i" = "There {?is/are} {len} element{?s}.",
+      "x" = "You've tried to subset element {idx}."
+    )),
+    warning = function(w) w
+  )
+  expect_snapshot(wrn$cli_bullets)
 })
 
 test_that_cli("cli_inform", {
@@ -58,9 +82,28 @@ test_that_cli("cli_inform", {
       "x" = "You've tried to subset element {idx}."
     ))
   }))
+
+  len <- 26
+  idx <- 100
+  # This is weirder because cli_inform emits another cli message first
+  inf <- NULL
+  withCallingHandlers(
+    cli_inform(c(
+            "Must index an existing element:",
+      "i" = "There {?is/are} {len} element{?s}.",
+      "x" = "You've tried to subset element {idx}."
+    )),
+    message = function(m) {
+      inf <<- c(inf, list(m))
+      invokeRestart("muffleMessage")
+    }
+  )
+  expect_snapshot(tail(inf, 1)[[1]]$cli_bullets)
 })
 
 test_that("cli_abort width in RStudio", {
+  # this is to fix breakage with new testthat
+  withr::local_options(cli.condition_width = getOption("cli.width"))
   mockery::stub(cli_abort, "rstudio_detect", list(type = "rstudio_console"))
   local_rng_version("3.5.0")
   set.seed(42)

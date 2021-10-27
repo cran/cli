@@ -4,6 +4,8 @@
 #' It is often useful to print out a list of items, tasks a function or
 #' package performs, or a list of notes.
 #'
+#' @details
+#'
 #' Items may be formatted differently, e.g. they can have a prefix symbol.
 #' Formatting is specified by the names of `text`, and can be themed.
 #' cli creates a `div` element of class `memo` for the whole memo. Each
@@ -12,7 +14,7 @@
 #' a name create a `div` element of class `memo-item-empty`, and if the
 #' name is a single space character, the class is `memo-item-space`.
 #'
-#' The builtin theme defines the following item types:
+#' The built-in theme defines the following item types:
 #' * No name: Item without a prefix.
 #' * ` `: Indented item.
 #' * `*`: Item with a bullet.
@@ -25,14 +27,7 @@
 #' You can define new item type by simply defining theming for the
 #' corresponding `memo-item-<name>` classes.
 #'
-#' @param text Character vector of items. See details below on how names
-#' are interpreted.
-#' @param id Optional od of the `div.memo` element, can be used in themes.
-#' @param class Optional additional class(es) for the `div.memo` element.
-#' @param .envir Environment to evaluate the glue expressions in.
-#'
-#' @export
-#' @examples
+#' ```{asciicast cli-bullets}
 #' cli_bullets(c(
 #'         "noindent",
 #'   " " = "indent",
@@ -43,6 +38,15 @@
 #'   "!" = "warning",
 #'   "i" = "info"
 #' ))
+#' ```
+#'
+#' @param text Character vector of items. See details below on how names
+#' are interpreted.
+#' @param id Optional id of the `div.memo` element, can be used in themes.
+#' @param class Optional additional class(es) for the `div.memo` element.
+#' @param .envir Environment to evaluate the glue expressions in.
+#'
+#' @export
 
 cli_bullets <- function(text, id = NULL, class = NULL,
                      .envir = parent.frame()) {
@@ -57,4 +61,41 @@ cli_bullets <- function(text, id = NULL, class = NULL,
       class = class
     )
   )
+}
+
+#' List of verbatim items
+#'
+#' `cli_format_bullets_raw()` is similar to [cli_bullets()], but it does
+#' not perform any inline styling or glue substitutions in the input.
+#'
+#' `format_bullets_raw()` returned the output instead of printing it.
+#'
+#' @param text Character vector of items. See details below on how names
+#' are interpreted.
+#' @param id Optional id of the `div.memo` element, can be used in themes.
+#' @param class Optional additional class(es) for the `div.memo` element.
+#'
+#' @seealso See [cli_bullets()] for examples.
+#' @export
+
+cli_bullets_raw <- function(text, id = NULL, class = NULL) {
+  text <- cli_escape(text)
+  cli__message(
+    "memo",
+    list(
+      text = structure(
+        lapply(text, glue_no_cmd),
+        names = names(text)
+      ),
+      id = id,
+      class = class
+    )
+  )
+}
+
+#' @rdname cli_bullets_raw
+#' @export
+
+format_bullets_raw <- function(text, id = NULL, class = NULL) {
+  fmt(cli_bullets_raw(text, id, class))
 }

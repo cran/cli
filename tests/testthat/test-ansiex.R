@@ -26,9 +26,11 @@ test_that("ansi_has_any works", {
     cli.hyperlink = TRUE
   ))
   expect_false(ansi_has_any("foobar"))
-  for (sym in ls(asNamespace("cli"), pattern = "^col_|^bg_|^style_")) {
+  funcs <- ls(asNamespace("cli"), pattern = "^col_|^bg_|^style_")
+
+  for (sym in setdiff(funcs, "style_hyperlink")) {
     fun <- get(sym, envir = asNamespace("cli"))
-    expect_true(ansi_has_any(fun("foo", "bar")))
+    expect_true(ansi_has_any(fun("foo", "bar")), label = sym)
   }
 })
 
@@ -44,8 +46,8 @@ test_that("ansi_strip works", {
     ansi_strip(col_red(style_underline(style_bold("foobar"))))
   )
 
-
-  for (sym in ls(asNamespace("cli"), pattern = "^col_|^bg_|^style_")) {
+  funcs <- ls(asNamespace("cli"), pattern = "^col_|^bg_|^style_")
+  for (sym in setdiff(funcs, "style_hyperlink")) {
     fun <- get(sym, envir = asNamespace("cli"))
     ans <- if (sym == "style_hyperlink") "foo" else "foobar"
     expect_equal(ans, ansi_strip(fun("foo", "bar")))
@@ -111,7 +113,7 @@ test_that("ansi_substr keeps color", {
   )
   expect_equal(
     ansi_substr("\033[31mred\033[39mfoo\033[31mred\033[39mbar", 7, 7),
-    ansi_string("\033[31m\033[39m\033[31mr\033[39m")
+    ansi_string("\033[31mr\033[39m")
   )
 })
 
@@ -385,6 +387,7 @@ test_that("ansi_align", {
 })
 
 test_that("stripping hyperlinks", {
+  skip("Temporarily defunct")
   withr::local_options(list(cli.hyperlink = TRUE))
   x <- unclass(style_hyperlink("foo", "https://r-pkg.org"))
   expect_equal(
@@ -432,6 +435,7 @@ test_that("ansi_trimws", {
     list("", ansi_string("")),
     list("foo", ansi_string("foo")),
     list("  foo  ", ansi_string("  foo")),
+    list(c("  foo  ", "  bar  "), ansi_string(c("  foo", "  bar"))),
     list(c("foo", "bar"), ansi_string(c("foo", "bar"))),
     list(col_red(c("  colored  ")), ansi_string(col_red("  colored"))),
     list(
@@ -439,8 +443,8 @@ test_that("ansi_trimws", {
       ansi_string(paste0("   ", col_red("  colored"))))
   )
 
-  for (case in cases_left) {
-    expect_equal(ansi_trimws(case[[1]], "left"), case[[2]])
+  for (case in cases_right) {
+    expect_equal(ansi_trimws(case[[1]], "right"), case[[2]])
   }
 })
 
@@ -515,7 +519,18 @@ test_that("ansi_strwrap newlines", {
   )
 })
 
-test_that("ansi_strtrim", {
+test_that("ansi_strwrap and \f edge cases", {
+  expect_equal(
+    ansi_strwrap("\033[32mfoo\fbar\033[39m"),
+    ansi_string(c("\033[32mfoo\033[39m", "\033[32mbar\033[39m"))
+  )
+  expect_equal(
+    ansi_strwrap("\033[32m\ffoo\f\033[39m"),
+    ansi_string(c("", "\033[32mfoo\033[39m"))
+  )
+})
+
+test_that_cli(configs = c("plain", "ansi"), "ansi_strtrim", {
   withr::local_options(c(cli.unicode = FALSE))
   setup_unicode_width_fix()
   cases <- list(
@@ -527,7 +542,8 @@ test_that("ansi_strtrim", {
     list(
       strrep("\u231A", 6),
       ansi_string(paste0(strrep("\u231A", 3), "..."))),
-    list(col_red("1"), col_red("1"))
+    list(col_red("1"), col_red("1")),
+    list(c("foo", NA, col_red("bar")), ansi_string(c("foo", NA, col_red("bar"))))
   )
 
   for (case in cases) expect_equal(ansi_strtrim(case[[1]], 10), case[[2]])

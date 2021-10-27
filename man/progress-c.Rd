@@ -17,7 +17,7 @@ call \code{cli_progress_init_timer()} or create a progress bar with
 \code{cli_progress_bar()}.
 }
 
-\subsection{\code{cli_progress_add()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{void cli_progress_add(SEXP bar, int inc);
+\subsection{\code{cli_progress_add()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{void cli_progress_add(SEXP bar, double inc);
 }\if{html}{\out{</div>}}
 
 Add a number of progress units to the progress bar. It will also
@@ -28,13 +28,13 @@ trigger an update if an update is due.
 }
 }
 
-\subsection{\code{cli_progress_bar()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{SEXP cli_progress_bar(int total, SEXP config);
+\subsection{\code{cli_progress_bar()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{SEXP cli_progress_bar(double total, SEXP config);
 }\if{html}{\out{</div>}}
 
 Create a new progress bar object. The returned progress bar object
 must be \code{PROTECT()}-ed.
 \itemize{
-\item \code{total}: Total number of progress units. Use \code{NA_INTEGER} if it is not
+\item \code{total}: Total number of progress units. Use \code{NA_REAL} if it is not
 known.
 \item \code{config}: R named list object of additional parameters. May be \code{NULL}
 (the C \verb{NULL~) or }R_NilValue\verb{(the R}NULL`) for the defaults.
@@ -43,7 +43,7 @@ known.
 \code{config} may contain the following entries:
 \itemize{
 \item \code{name}: progress bar name.
-\item \code{status}: (intiial) progress bar status.
+\item \code{status}: (initial) progress bar status.
 \item \code{type}: progress bar type.
 \item \code{total}: total number of progress units.
 \item \code{show_after}: show the progress bar after the specified number of
@@ -94,7 +94,7 @@ Initialize the cli timer without creating a progress bar.
 Returns the number of currently active progress bars.
 }
 
-\subsection{\code{cli_progress_set()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{void cli_progress_set(SEXP bar, int set);
+\subsection{\code{cli_progress_set()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{void cli_progress_set(SEXP bar, double set);
 }\if{html}{\out{</div>}}
 
 Set the progress bar to the specified number of progress units.
@@ -170,7 +170,7 @@ undefined.
 }
 }
 
-\subsection{\code{cli_progress_update()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{void cli_progress_update(SEXP bar, int force, int add, int set);
+\subsection{\code{cli_progress_update()}}{\if{html}{\out{<div class="sourceCode c">}}\preformatted{void cli_progress_update(SEXP bar, double set, double inc, int force);
 }\if{html}{\out{</div>}}
 
 Update the progress bar. Unlike the simpler \code{cli_progress_add()} and
@@ -180,7 +180,7 @@ set to 1.
 \item \code{bar}: progress bar object.
 \item \code{set}: the number of current progress units. It is ignored if
 negative.
-\item \code{inc}: increment to add to the current number of progres units.
+\item \code{inc}: increment to add to the current number of progress units.
 It is ignored if \code{set} is not negative.
 \item \code{force}: whether to force an update, even if no update is due.
 }

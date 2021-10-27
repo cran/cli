@@ -6,18 +6,15 @@
 #' The messages can use inline styling, pluralization and glue
 #' substitutions.
 #'
-#' @param message It is formatted via a call to [cli_bullets()].
-#' @param .envir Environment to evaluate the glue expressions in.
-#'
-#' @export
-#' @examples
-#' \dontrun{
+#' ```{asciicast format-error}
 #' n <- "boo"
 #' stop(format_error(c(
 #'         "{.var n} must be a numeric vector",
 #'   "x" = "You've supplied a {.cls {class(n)}} vector."
 #' )))
+#' ```
 #'
+#' ```{asciicast format-error-2}
 #' len <- 26
 #' idx <- 100
 #' stop(format_error(c(
@@ -25,7 +22,11 @@
 #'   "i" = "There {?is/are} {len} element{?s}.",
 #'   "x" = "You've tried to subset element {idx}."
 #' )))
-#' }
+#' ```
+#'
+#' @param message It is formatted via a call to [cli_bullets()].
+#' @param .envir Environment to evaluate the glue expressions in.
+#'
 #' @export
 
 format_error <- function(message, .envir = parent.frame()) {
@@ -40,13 +41,20 @@ format_error <- function(message, .envir = parent.frame()) {
   if (rstudio_detect()$type %in% rsconsole) {
     # leave some space for the traceback buttons in RStudio
     oldopt <- options(cli.width = console_width() - 15L)
-    on.exit(options(oldopt), add = TRUE)
+  } else {
+    oldopt <- options(
+      cli.width = getOption("cli.condition_width") %||% getOption("cli.width")
+    )
   }
+  on.exit(options(oldopt), add =TRUE)
 
-  formatted1 <- fmt({
+  # We need to create a frame here, so cli_div() is closed.
+  # Cannot use local(), it does not work in snapshot tests, it potentially
+  # has issues elsewhere as well.
+  formatted1 <- fmt((function() {
     cli_div(class = "cli_rlang cli_abort")
     cli_bullets(message, .envir = .envir)
-  }, collapse = TRUE, strip_newline = TRUE)
+  })(), collapse = TRUE, strip_newline = TRUE)
 
   # remove "Error: " that was only needed for the wrapping
   formatted1[1] <- sub("Error: ", "", formatted1[1])
@@ -63,10 +71,15 @@ format_warning <- function(message, .envir = parent.frame()) {
     names(message)[1] <- "1"
   }
 
-  formatted1 <- fmt({
+  oldopt <- options(
+    cli.width = getOption("cli.condition_width") %||% getOption("cli.width")
+  )
+  on.exit(options(oldopt), add = TRUE)
+
+  formatted1 <- fmt((function() {
     cli_div(class = "cli_rlang cli_warn")
     cli_bullets(message, .envir = .envir)
-  }, collapse = TRUE, strip_newline = TRUE)
+  })(), collapse = TRUE, strip_newline = TRUE)
 
   update_rstudio_color(formatted1)
 }
@@ -75,10 +88,14 @@ format_warning <- function(message, .envir = parent.frame()) {
 #' @export
 
 format_message <- function(message, .envir = parent.frame()) {
-  formatted1 <- fmt({
+  oldopt <- options(
+    cli.width = getOption("cli.condition_width") %||% getOption("cli.width")
+  )
+  on.exit(options(oldopt), add = TRUE)
+  formatted1 <- fmt((function() {
     cli_div(class = "cli_rlang cli_inform")
     cli_bullets(message, .envir = .envir)
-  }, collapse = TRUE, strip_newline = TRUE)
+  })(), collapse = TRUE, strip_newline = TRUE)
   update_rstudio_color(formatted1)
 }
 

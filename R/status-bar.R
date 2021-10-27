@@ -1,10 +1,16 @@
 
-#' Update the status bar
+#' Update the status bar (superseded)
+#'
+#' @description
+#' **The `cli_status_*()` functions are superseded by
+#' the [cli_progress_message()] and [cli_progress_step()] functions,
+#' because they have a better default behavior.**
 #'
 #' The status bar is the last line of the terminal. cli apps can use this
 #' to show status information, progress bars, etc. The status bar is kept
 #' intact by all semantic cli output.
 #'
+#' @details
 #' Use [cli_status_clear()] to clear the status bar.
 #'
 #' Often status messages are associated with processes. E.g. the app starts
@@ -30,15 +36,15 @@
 #'   screen is scrolled up if needed). If `FALSE`, then this status bar
 #'   is deleted.
 #' @param .auto_close Whether to clear the status bar when the calling
-#'   function finishes (or ‘.envir’ is removed from the stack, if
+#'   function finishes (or `.envir` is removed from the stack, if
 #'   specified).
 #' @param .envir Environment to evaluate the glue expressions in. It is
 #'   also used to auto-clear the status bar if `.auto_close` is `TRUE`.
 #' @param .auto_result What to do when auto-closing the status bar.
 #' @return The id of the new status bar container element, invisibly.
 #'
-#' @seealso [cli_process_start()] for a higher level interface to the
-#'   status bar, that adds automatic styling.
+#' @seealso The [cli_progress_message()] and [cli_progress_step()]
+#'   functions, for a superior API.
 #' @family status bar
 #' @export
 
@@ -67,6 +73,13 @@ cli_status <- function(msg, msg_done = paste(msg, "... done"),
   invisible(id)
 }
 
+#' Clear the status bar (superseded)
+#'
+#' @description
+#' **The `cli_status_*()` functions are superseded by
+#' the [cli_progress_message()] and [cli_progress_step()] functions,
+#' because they have a better default behavior.**
+#'
 #' Clear the status bar
 #'
 #' @param id Id of the status bar container to clear. If `id` is not the id
@@ -84,6 +97,8 @@ cli_status <- function(msg, msg_done = paste(msg, "... done"),
 #' @inheritParams cli_status
 #'
 #' @family status bar
+#' @seealso The [cli_progress_message()] and [cli_progress_step()]
+#'   functions, for a superior API.
 #' @export
 
 cli_status_clear <- function(id = NULL, result = c("clear", "done", "failed"),
@@ -101,6 +116,13 @@ cli_status_clear <- function(id = NULL, result = c("clear", "done", "failed"),
   )
 }
 
+#' Update the status bar (superseded)
+#'
+#' @description
+#' **The `cli_status_*()` functions are superseded by
+#' the [cli_progress_message()] and [cli_progress_step()] functions,
+#' because they have a better default behavior.**
+#'
 #' Update the status bar
 #'
 #' @param msg Text to update the status bar with. `NULL` if you don't want
@@ -115,6 +137,8 @@ cli_status_clear <- function(id = NULL, result = c("clear", "done", "failed"),
 #' @return Id of the status bar container.
 #'
 #' @family status bar
+#' @seealso The [cli_progress_message()] and [cli_progress_step()]
+#'   functions, for a superior API.
 #' @export
 
 cli_status_update <- function(id = NULL, msg = NULL, msg_done = NULL,
@@ -131,12 +155,19 @@ cli_status_update <- function(id = NULL, msg = NULL, msg_done = NULL,
 }
 
 #' Indicate the start and termination of some computation in the status bar
+#' (superseded)
+#'
+#' @description
+#' **The `cli_process_*()` functions are superseded by
+#' the [cli_progress_message()] and [cli_progress_step()] functions,
+#' because they have a better default behavior.**
 #'
 #' Typically you call `cli_process_start()` to start the process, and then
 #' `cli_process_done()` when it is done. If an error happens before
 #' `cli_process_done()` is called, then cli automatically shows the message
 #' for unsuccessful termination.
 #'
+#' @details
 #' If you handle the errors of the process or computation, then you can do
 #' the opposite: call `cli_process_start()` with `on_exit = "done"`, and
 #' in the error handler call `cli_process_failed()`. cli will automatically
@@ -163,6 +194,8 @@ cli_status_update <- function(id = NULL, msg = NULL, msg_done = NULL,
 #' @return Id of the status bar container.
 #'
 #' @family status bar
+#' @seealso The [cli_progress_message()] and [cli_progress_step()]
+#'   functions, for a superior API.
 #' @export
 #' @examples
 #'
@@ -270,7 +303,7 @@ clii_status_clear <- function(app, id, result, msg_done, msg_failed) {
   if (is.na(id)) id <- names(app$status_bar)[1]
 
   ## If no active status bar, then ignore
-  if (is.na(id)) return(invisible())
+  if (is.null(id) || is.na(id)) return(invisible())
   if (! id %in% names(app$status_bar)) return(invisible())
 
   if (result == "auto") {
@@ -383,6 +416,6 @@ clii__clear_status_bar <- function(app) {
   } else if (is_dynamic_tty(output)) {
     text <- app$status_bar[[1]]$content
     len <- ansi_nchar(text, type = "width")
-    app$cat(paste0("\r", strrep(" ", len), "\r"))
+    app$cat(paste0("\r", strrep(" ", len + rstudio_r_fix), "\r"))
   }
 }

@@ -1,4 +1,22 @@
 
+palette_idx <- function(id) {
+  ifelse(
+    id < 38,
+    id - (30 - 1),
+  ifelse(
+    id < 48,
+    -(id - (40 - 1)),
+  ifelse(
+    id < 98,
+    id - (90 - 9),
+    -(id - (100 - 9))
+  )))
+}
+
+palette_color <- function(x) {
+  c(x, palette = palette_idx(x[[1]]))
+}
+
 ansi_builtin_styles <- list(
   reset = list(0, c(0, 22, 23, 24, 27, 28, 29, 39, 49)),
   bold = list(1, 22), # 21 isn't widely supported and 22 does the same thing
@@ -9,24 +27,42 @@ ansi_builtin_styles <- list(
   hidden = list(8, 28),
   strikethrough = list(9, 29),
 
-  black = list(30, 39),
-  red = list(31, 39),
-  green = list(32, 39),
-  yellow = list(33, 39),
-  blue = list(34, 39),
-  magenta = list(35, 39),
-  cyan = list(36, 39),
-  white = list(37, 39),
+  black = palette_color(list(30, 39)),
+  red = palette_color(list(31, 39)),
+  green = palette_color(list(32, 39)),
+  yellow = palette_color(list(33, 39)),
+  blue = palette_color(list(34, 39)),
+  magenta = palette_color(list(35, 39)),
+  cyan = palette_color(list(36, 39)),
+  white = palette_color(list(37, 39)),
   silver = list(90, 39),
 
-  bg_black = list(40, 49),
-  bg_red = list(41, 49),
-  bg_green = list(42, 49),
-  bg_yellow = list(43, 49),
-  bg_blue = list(44, 49),
-  bg_magenta = list(45, 49),
-  bg_cyan = list(46, 49),
-  bg_white = list(47, 49),
+  br_black = palette_color(list(90, 39)),
+  br_red = palette_color(list(91, 39)),
+  br_green = palette_color(list(92, 39)),
+  br_yellow = palette_color(list(93, 39)),
+  br_blue = palette_color(list(94, 39)),
+  br_magenta = palette_color(list(95, 39)),
+  br_cyan = palette_color(list(96, 39)),
+  br_white = palette_color(list(97, 39)),
+
+  bg_black = palette_color(list(40, 49)),
+  bg_red = palette_color(list(41, 49)),
+  bg_green = palette_color(list(42, 49)),
+  bg_yellow = palette_color(list(43, 49)),
+  bg_blue = palette_color(list(44, 49)),
+  bg_magenta = palette_color(list(45, 49)),
+  bg_cyan = palette_color(list(46, 49)),
+  bg_white = palette_color(list(47, 49)),
+
+  bg_br_black = palette_color(list(100, 39)),
+  bg_br_red = palette_color(list(101, 39)),
+  bg_br_green = palette_color(list(102, 39)),
+  bg_br_yellow = palette_color(list(103, 39)),
+  bg_br_blue = palette_color(list(104, 39)),
+  bg_br_magenta = palette_color(list(105, 39)),
+  bg_br_cyan = palette_color(list(106, 39)),
+  bg_br_white = palette_color(list(107, 39)),
 
   # similar to reset, but only for a single property
   no_bold          = list(c(0,     23, 24, 27, 28, 29, 39, 49), 22),
@@ -77,19 +113,21 @@ ansi_style_str <- function(x) {
   paste0("\u001b[", x, "m", collapse = "")
 }
 
-create_ansi_style_tag <- function(name, open, close) {
+create_ansi_style_tag <- function(name, open, close, palette = NULL) {
   structure(
-    list(list(open = open, close = close)),
+    list(list(open = open, close = close, palette = palette)),
     names = name
   )
 }
 
 create_ansi_style_fun <- function(styles) {
   fun <- eval(substitute(function(...) {
-    mystyles <- .styles
     txt <- paste0(...)
-    if (num_ansi_colors() > 1) {
+    nc <- num_ansi_colors()
+    if (nc > 1) {
+      mystyles <- .styles
       for (st in rev(mystyles)) {
+        if (!is.null(st$palette)) st <- get_palette_color(st, nc)
         txt <- paste0(
           st$open,
           gsub(st$close, st$open, txt, fixed = TRUE),
@@ -109,7 +147,8 @@ create_ansi_style_fun <- function(styles) {
 create_ansi_style <- function(name, open = NULL, close = NULL) {
   open <- open %||% ansi_style_str(ansi_builtin_styles[[name]][[1]])
   close <- close %||% ansi_style_str(ansi_builtin_styles[[name]][[2]])
-  style <- create_ansi_style_tag(name, open, close)
+  palette <- ansi_builtin_styles[[name]]$palette
+  style <- create_ansi_style_tag(name, open, close, palette)
   create_ansi_style_fun(style)
 }
 
@@ -142,7 +181,7 @@ print.ansi_style <- function(x, ...) {
 #'   This flag is included, because ANSI 256 has a finer color scale
 #'   for greys, then the usual 0:5 scale for red, green and blue components.
 #'   It is only used for RGB color specifications (either numerically
-#'   or via a hexa string), and it is ignored on eigth color ANSI
+#'   or via a hexadecimal string), and it is ignored on eight color ANSI
 #'   terminals.
 #' @param colors Number of colors, detected automatically
 #'   by default.
@@ -153,7 +192,7 @@ print.ansi_style <- function(x, ...) {
 #' * A cli ANSI style function of class `ansi_style`. This is returned
 #'   as is, without looking at the other arguments.
 #' * An R color name, see [grDevices::colors()].
-#' * A 6- or 8-digit hexa color string, e.g. `#ff0000` means
+#' * A 6- or 8-digit hexadecimal color string, e.g. `#ff0000` means
 #'   red. Transparency (alpha channel) values are ignored.
 #' * A one-column matrix with three rows for the red, green
 #'   and blue channels, as returned by [grDevices::col2rgb()].
@@ -243,7 +282,8 @@ ansi_style_8_from_rgb <- function(rgb, bg) {
 
 ansi_style_from_rgb <- function(rgb, bg, num_colors, grey) {
   if (num_colors < 256) { return(ansi_style_8_from_rgb(rgb, bg)) }
-  ansi256(rgb, bg, grey)
+  if (num_colors < truecolor || grey) return(ansi256(rgb, bg, grey))
+  return(ansitrue(rgb, bg))
 }
 
 # nocov start
@@ -306,6 +346,20 @@ ansi256_rgb_index <- function(red, green, blue) {
     232 + round((red + green + blue) / 33) + 1
   } else {
     16 + sum(floor(6 * c(red, green, blue) / 256) * c(36, 6, 1)) + 1
+  }
+}
+
+ansitrue <- function(rgb, bg = FALSE) {
+  if (bg) {
+    list(
+      open = paste0("\x1b[48;2;", rgb[1], ";", rgb[2], ";", rgb[3], "m"),
+      close = "\x1b[49m"
+    )
+  } else {
+    list(
+      open = paste0("\x1b[38;2;", rgb[1], ";", rgb[2], ";", rgb[3], "m"),
+      close = "\x1b[39m"
+    )
   }
 }
 

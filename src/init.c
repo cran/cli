@@ -16,6 +16,7 @@ SEXP clic_dataptr(SEXP x);
 
 void __gcov_flush();
 SEXP clic__gcov_flush() {
+  REprintf("Flushing coverage info\n");
   __gcov_flush();
   return R_NilValue;
 }
@@ -31,7 +32,20 @@ SEXP clic__gcov_flush() {
 static const R_CallMethodDef callMethods[]  = {
   CLEANCALL_METHOD_RECORD,
 
+  { "clic_diff_chr",       (DL_FUNC) clic_diff_chr,       3 },
+  { "clic_md5",            (DL_FUNC) clic_md5,            1 },
   { "clic_tty_size",       (DL_FUNC) clic_tty_size,       0 },
+  { "clic_ansi_simplify",  (DL_FUNC) clic_ansi_simplify,  2 },
+  { "clic_ansi_substr",    (DL_FUNC) clic_ansi_substr,    3 },
+  { "clic_ansi_html",      (DL_FUNC) clic_ansi_html,      2 },
+  { "clic_ansi_has_any",   (DL_FUNC) clic_ansi_has_any,   3 },
+  { "clic_ansi_strip",     (DL_FUNC) clic_ansi_strip,     3 },
+  { "clic_ansi_nchar",     (DL_FUNC) clic_ansi_nchar,     2 },
+
+  { "clic_utf8_display_width",   (DL_FUNC) clic_utf8_display_width,   1 },
+  { "clic_utf8_nchar_graphemes", (DL_FUNC) clic_utf8_nchar_graphemes, 1 },
+  { "clic_utf8_substr",          (DL_FUNC) clic_utf8_substr,          3 },
+  { "clic_utf8_graphemes",       (DL_FUNC) clic_utf8_graphemes,       1 },
 
   { "clic_dataptr",        (DL_FUNC) clic_dataptr,        1 },
   { "clic_start_thread",   (DL_FUNC) clic_start_thread,   3 },

@@ -31,8 +31,8 @@
         stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
       })
     Error <simpleError>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31mx[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -44,7 +44,7 @@
           x = "You've tried to subset element {idx}.")))
       })
     Error <simpleError>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
 
@@ -81,8 +81,8 @@
         stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
       })
     Error <simpleError>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31m✖[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -94,7 +94,7 @@
           x = "You've tried to subset element {idx}.")))
       })
     Error <simpleError>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
 
@@ -127,8 +127,8 @@
       n <- "boo"
       warning(format_warning(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Warning <simpleWarning>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31mx[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -140,7 +140,7 @@
           x = "You've tried to subset element {idx}.")))
       })
     Warning <simpleWarning>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
 
@@ -173,8 +173,8 @@
       n <- "boo"
       warning(format_warning(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Warning <simpleWarning>
-      [1m[22m[1m[1m[30m[47m[1m[30m[47m`n`[47m[30m[1m[49m[39m must be a numeric vector[1m[22m
-      [31m✖[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -186,7 +186,7 @@
           x = "You've tried to subset element {idx}.")))
       })
     Warning <simpleWarning>
-      [1m[22m[1m[1mMust index an existing element:[1m[22m
+      [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
 
@@ -219,8 +219,8 @@
       n <- "boo"
       message(format_message(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Message <simpleMessage>
-      [1m[22m[30m[47m[30m[47m`n`[47m[30m[49m[39m must be a numeric vector
-      [31mx[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -265,8 +265,8 @@
       n <- "boo"
       message(format_message(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Message <simpleMessage>
-      [1m[22m[30m[47m[30m[47m`n`[47m[30m[49m[39m must be a numeric vector
-      [31m✖[39m You've supplied a [34m[34m<character>[34m[39m vector.
+      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
 
@@ -296,11 +296,11 @@
       exercitation nostrud ullamco dolor exercitation ut veniam.
       Fugiat irure tempor commodo voluptate ut. In et tempor excepteur
       quis.
-      i Et nisi ad quis ad cupidatat tempor laborum est excepteur aliqua
-        veniam ex. Sunt magna veniam Lorem elit enim et pariatur
-        aliqua occaecat mollit consequat dolore in mollit. Officia
-        labore reprehenderit culpa dolore quis nisi do aliqua commodo
-        deserunt fugiat cupidatat nostrud ad.
+      i Et nisi ad quis ad cupidatat tempor laborum est excepteur
+        aliqua veniam ex. Sunt magna veniam Lorem elit enim et
+        pariatur aliqua occaecat mollit consequat dolore in mollit.
+        Officia labore reprehenderit culpa dolore quis nisi do aliqua
+        commodo deserunt fugiat cupidatat nostrud ad.
       x Ad laboris consectetur esse minim pariatur irure do anim anim.
         Mollit ad cupidatat ullamco ullamco nulla elit in.
 
@@ -332,4 +332,34 @@
       format_warning(c(`*` = "foo", `*` = "bar"))
     Output
       [1] "* foo\n* bar"
+
+# cli.condition_width
+
+    Code
+      format_error(msg)
+    Output
+      [1] "1234567890 1234567890 1234567890\n1234567890 1234567890 1234567890\n1234567890 1234567890"
+    Code
+      format_warning(msg)
+    Output
+      [1] "1234567890 1234567890 1234567890\n1234567890 1234567890 1234567890\n1234567890 1234567890"
+    Code
+      format_message(msg)
+    Output
+      [1] "1234567890 1234567890 1234567890\n1234567890 1234567890 1234567890\n1234567890 1234567890"
+
+---
+
+    Code
+      format_error(msg)
+    Output
+      [1] "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
+    Code
+      format_warning(msg)
+    Output
+      [1] "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
+    Code
+      format_message(msg)
+    Output
+      [1] "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
 

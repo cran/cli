@@ -222,7 +222,7 @@ clii__inline <- function(app, text, .list) {
   paste(out, collapse = "")
 }
 
-inline_regex <- function() "(?s)^[.]([-[:alnum:]_]+)[[:space:]]+(.+)"
+inline_regex <- function() "(?s)^[.]([-[:alnum:]_]+)[[:space:]]+(.*)"
 
 make_cmd_transformer <- function(values) {
   values$marker <- random_id()
@@ -275,6 +275,15 @@ glue_cmd <- function(..., .envir) {
   pstr <- glue::glue(str, .envir = .envir, .transformer = transformer, .trim = TRUE)
   glue_delay(
     str = post_process_plurals(pstr, values),
+    values = values
+  )
+}
+
+glue_no_cmd <- function(...) {
+  str <- paste0(unlist(list(...), use.names = FALSE), collapse = "")
+  values <-new.env(parent = emptyenv())
+  glue_delay(
+    str = str,
     values = values
   )
 }

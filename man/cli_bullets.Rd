@@ -10,7 +10,7 @@ cli_bullets(text, id = NULL, class = NULL, .envir = parent.frame())
 \item{text}{Character vector of items. See details below on how names
 are interpreted.}
 
-\item{id}{Optional od of the \code{div.memo} element, can be used in themes.}
+\item{id}{Optional id of the \code{div.memo} element, can be used in themes.}
 
 \item{class}{Optional additional class(es) for the \code{div.memo} element.}
 
@@ -29,7 +29,7 @@ item is another \code{div} element of class \verb{memo-item-<name>}, where
 a name create a \code{div} element of class \code{memo-item-empty}, and if the
 name is a single space character, the class is \code{memo-item-space}.
 
-The builtin theme defines the following item types:
+The built-in theme defines the following item types:
 \itemize{
 \item No name: Item without a prefix.
 \item \verb{}: Indented item.
@@ -42,10 +42,7 @@ The builtin theme defines the following item types:
 }
 
 You can define new item type by simply defining theming for the
-corresponding \verb{memo-item-<name>} classes.
-}
-\examples{
-cli_bullets(c(
+corresponding \verb{memo-item-<name>} classes.\if{html}{\out{<div class="sourceCode r">}}\preformatted{cli_bullets(c(
         "noindent",
   " " = "indent",
   "*" = "bullet",
@@ -55,4 +52,7 @@ cli_bullets(c(
   "!" = "warning",
   "i" = "info"
 ))
+}\if{html}{\out{</div>}}
+
+\if{html}{\figure{cli-bullets.svg}}
 }
