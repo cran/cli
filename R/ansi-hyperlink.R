@@ -16,6 +16,7 @@
 #' @param text Text to show. `text` and `url` are recycled to match their
 #'   length, via a `paste0()` call.
 #' @param url URL to link to.
+#' @param params A named character vector of additional parameters, or `NULL`.
 #' @return Styled `ansi_string` for `style_hyperlink()`.
 #'   Logical scalar for `ansi_has_hyperlink_support()`.
 #'
@@ -23,9 +24,13 @@
 #' @examples
 #' cat("This is an", style_hyperlink("R", "https://r-project.org"), "link.\n")
 
-style_hyperlink <- function(text, url) {
+style_hyperlink <- function(text, url, params = NULL) {
+  params <- glue::glue_collapse(sep = ":",
+    glue::glue("{names(params)}={params}")
+  )
+
   out <- if (ansi_has_hyperlink_support()) {
-    paste0("\u001B]8;;", url, "\u0007", text, "\u001B]8;;\u0007")
+    paste0("\u001B]8;", params, ";", url, "\u0007", text, "\u001B]8;;\u0007")
   } else {
     text
   }
@@ -44,6 +49,10 @@ ansi_has_hyperlink_support <- function() {
   ## Hyperlinks forced?
   enabled <- getOption("cli.hyperlink", getOption("crayon.hyperlink"))
   if (!is.null(enabled)) { return(isTRUE(enabled)) }
+
+  ## forced by environment variable
+  enabled <- Sys.getenv("R_CLI_HYPERLINKS", "")
+  if (isTRUE(as.logical(enabled))){ return(TRUE) }
 
   ## Are we in a terminal? No?
   if (!isatty(stdout())) { return(FALSE) }

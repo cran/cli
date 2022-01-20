@@ -1,3 +1,8 @@
+
+# cli 3.1.1
+
+* `style_hyperlink()` gains a `params=` argument (#384).
+
 # cli 3.1.0
 
 ## Breaking changes
