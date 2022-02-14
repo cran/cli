@@ -26,7 +26,7 @@
 ---
 
     Code
-      err$cli_bullets
+      c(err$message, err$body)
     Output
                                                                                     x 
                "`n` must be a numeric vector" "You've supplied a <character> vector." 
@@ -39,7 +39,7 @@
         cli_abort(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
       })
     Error <rlang_error>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -59,12 +59,12 @@
 ---
 
     Code
-      err$cli_bullets
+      c(err$message, err$body)
     Output
-                                                                     
-      "\033[30m\033[47m`n`\033[49m\033[39m must be a numeric vector" 
-                                                                   x 
-             "You've supplied a \033[34m<character>\033[39m vector." 
+                                                              
+                               "`n` must be a numeric vector" 
+                                                            x 
+      "You've supplied a \033[34m<character>\033[39m vector." 
 
 # cli_abort [unicode]
 
@@ -94,7 +94,7 @@
 ---
 
     Code
-      err$cli_bullets
+      c(err$message, err$body)
     Output
                                                                                     x 
                "`n` must be a numeric vector" "You've supplied a <character> vector." 
@@ -107,7 +107,7 @@
         cli_abort(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
       })
     Error <rlang_error>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -127,19 +127,19 @@
 ---
 
     Code
-      err$cli_bullets
+      c(err$message, err$body)
     Output
-                                                                     
-      "\033[30m\033[47m`n`\033[49m\033[39m must be a numeric vector" 
-                                                                   x 
-             "You've supplied a \033[34m<character>\033[39m vector." 
+                                                              
+                               "`n` must be a numeric vector" 
+                                                            x 
+      "You've supplied a \033[34m<character>\033[39m vector." 
 
 # cli_warn [plain]
 
     Code
       n <- "boo"
       cli_warn(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
-    Warning <warning>
+    Warning <rlang_warning>
       `n` must be a numeric vector
       x You've supplied a <character> vector.
 
@@ -152,7 +152,7 @@
         cli_warn(c("Must index an existing element:", i = "There {?is/are} {len} element{?s}.",
           x = "You've tried to subset element {idx}."))
       })
-    Warning <warning>
+    Warning <rlang_warning>
       Must index an existing element:
       i There are 26 elements.
       x You've tried to subset element 100.
@@ -172,8 +172,8 @@
     Code
       n <- "boo"
       cli_warn(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
-    Warning <warning>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+    Warning <rlang_warning>
+      [1m[22m`n` must be a numeric vector
       [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -185,7 +185,7 @@
         cli_warn(c("Must index an existing element:", i = "There {?is/are} {len} element{?s}.",
           x = "You've tried to subset element {idx}."))
       })
-    Warning <warning>
+    Warning <rlang_warning>
       [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
@@ -205,7 +205,7 @@
     Code
       n <- "boo"
       cli_warn(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
-    Warning <warning>
+    Warning <rlang_warning>
       `n` must be a numeric vector
       ✖ You've supplied a <character> vector.
 
@@ -218,7 +218,7 @@
         cli_warn(c("Must index an existing element:", i = "There {?is/are} {len} element{?s}.",
           x = "You've tried to subset element {idx}."))
       })
-    Warning <warning>
+    Warning <rlang_warning>
       Must index an existing element:
       ℹ There are 26 elements.
       ✖ You've tried to subset element 100.
@@ -238,8 +238,8 @@
     Code
       n <- "boo"
       cli_warn(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
-    Warning <warning>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+    Warning <rlang_warning>
+      [1m[22m`n` must be a numeric vector
       [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -251,7 +251,7 @@
         cli_warn(c("Must index an existing element:", i = "There {?is/are} {len} element{?s}.",
           x = "You've tried to subset element {idx}."))
       })
-    Warning <warning>
+    Warning <rlang_warning>
       [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
@@ -273,7 +273,7 @@
       cli_inform(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
     Message <cliMessage>
       
-    Message <message>
+    Message <rlang_message>
       `n` must be a numeric vector
       x You've supplied a <character> vector.
 
@@ -288,7 +288,7 @@
       })
     Message <cliMessage>
       
-    Message <message>
+    Message <rlang_message>
       Must index an existing element:
       i There are 26 elements.
       x You've tried to subset element 100.
@@ -310,8 +310,8 @@
       cli_inform(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
     Message <cliMessage>
       
-    Message <message>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+    Message <rlang_message>
+      [1m[22m`n` must be a numeric vector
       [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -325,7 +325,7 @@
       })
     Message <cliMessage>
       
-    Message <message>
+    Message <rlang_message>
       [1m[22mMust index an existing element:
       [36mi[39m There are 26 elements.
       [31mx[39m You've tried to subset element 100.
@@ -347,7 +347,7 @@
       cli_inform(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
     Message <cliMessage>
       
-    Message <message>
+    Message <rlang_message>
       `n` must be a numeric vector
       ✖ You've supplied a <character> vector.
 
@@ -362,7 +362,7 @@
       })
     Message <cliMessage>
       
-    Message <message>
+    Message <rlang_message>
       Must index an existing element:
       ℹ There are 26 elements.
       ✖ You've tried to subset element 100.
@@ -384,8 +384,8 @@
       cli_inform(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector."))
     Message <cliMessage>
       
-    Message <message>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+    Message <rlang_message>
+      [1m[22m`n` must be a numeric vector
       [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -399,7 +399,7 @@
       })
     Message <cliMessage>
       
-    Message <message>
+    Message <rlang_message>
       [1m[22mMust index an existing element:
       [36mℹ[39m There are 26 elements.
       [31m✖[39m You've tried to subset element 100.
@@ -447,4 +447,32 @@
       cat(update_rstudio_color("color me interested"))
     Output
       [32mcolor me interested[39m
+
+# cli_abort() captures correct call and backtrace
+
+    Code
+      print(expect_error(f()))
+    Output
+      <error/rlang_error>
+      Error in `h()`:
+      ! foo
+      Backtrace:
+        1. base::print(expect_error(f()))
+        8. cli f()
+        9. cli g()
+       10. cli h()
+
+---
+
+    Code
+      print(expect_error(f(list())))
+    Output
+      <error/cli_my_class>
+      Error in `h()`:
+      ! `x` can't be empty.
+      Backtrace:
+        1. base::print(expect_error(f(list())))
+        8. cli f(list())
+        9. cli g(x)
+       10. cli h(x)
 

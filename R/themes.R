@@ -81,13 +81,13 @@ clii_remove_theme <- function(app, id) {
 #' @seealso [themes], [simple_theme()].
 #' @return A named list, a CLI theme.
 #'
-#' @param dark Whether to use a dark theme. The `cli_theme_dark` option
+#' @param dark Whether to use a dark theme. The `cli.theme_dark` option
 #'   can be used to request a dark theme explicitly. If this is not set,
 #'   or set to `"auto"`, then cli tries to detect a dark theme, this
 #'   works in recent RStudio versions and in iTerm on macOS.
 #' @export
 
-builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
+builtin_theme <- function(dark = getOption("cli.theme_dark", "auto")) {
 
   dark <- detect_dark_theme(dark)
 
@@ -130,33 +130,33 @@ builtin_theme <- function(dark = getOption("cli_theme_dark", "auto")) {
       before = function() paste0(col_cyan(symbol$info), " ")
     ),
 
-    ".memo .memo-item-empty" = list(),
-    ".memo .memo-item-space" = list("margin-left" = 2),
-    ".memo .memo-item-v" = list(
+    ".bullets .bullet-empty" = list(),
+    ".bullets .bullet-space" = list("margin-left" = 2),
+    ".bullets .bullet-v" = list(
       "text-exdent" = 2,
       before = function(x) paste0(col_green(symbol$tick), " ")
     ),
-    ".memo .memo-item-x" = list(
+    ".bullets .bullet-x" = list(
       "text-exdent" = 2,
       before = function(x) paste0(col_red(symbol$cross), " ")
     ),
-    ".memo .memo-item-!" = list(
+    ".bullets .bullet-!" = list(
       "text-exdent" = 2,
       before = function(x) paste0(col_yellow("!"), " ")
     ),
-    ".memo .memo-item-i" = list(
+    ".bullets .bullet-i" = list(
       "text-exdent" = 2,
       before = function(x) paste0(col_cyan(symbol$info), " ")
     ),
-    ".memo .memo-item-*" = list(
+    ".bullets .bullet-*" = list(
       "text-exdent" = 2,
       before = function(x) paste0(col_cyan(symbol$bullet), " ")
     ),
-    ".memo .memo-item->" = list(
+    ".bullets .bullet->" = list(
       "text-exdent" = 2,
       before = function(x) paste0(symbol$arrow_right, " ")
     ),
-    ".memo .memo-item-1" = list(
+    ".bullets .bullet-1" = list(
     ),
 
     par = list("margin-top" = 0, "margin-bottom" = 1),
@@ -287,6 +287,8 @@ detect_dark_theme <- function(dark) {
         rstudioapi::getThemeInfo()$dark
       } else if (is_iterm()) {
         is_iterm_dark()
+      } else if (is_emacs()) {
+        Sys.getenv("ESS_BACKGROUND_MODE", "light") == "dark"
       } else {
         FALSE
       }
@@ -297,19 +299,35 @@ detect_dark_theme <- function(dark) {
 }
 
 theme_code <- function(dark) {
-  if (dark) {
-    list("background-color" = "#232323", color = "#d0d0d0")
-  } else{
-    list("background-color" = "#e8e8e8", color = "#202020")
-  }
+  list()
+}
+
+tick_formatter <- function(x) {
+  tt <- grepl("`", x, fixed = TRUE) + 1L
+  t1 <- c("`", "`` ")[tt]
+  t2 <- c("`", " ``")[tt]
+  paste0(t1, x, t2)
+}
+
+tick_formatter_fun <- function(x) {
+  tt <- grepl("`", x, fixed = TRUE) + 1L
+  t1 <- c("`", "`` ")[tt]
+  t2 <- c("()`", " ()``")[tt]
+  paste0(t1, x, t2)
 }
 
 theme_code_tick <- function(dark) {
-  utils::modifyList(theme_code(dark), list(before = "`", after = "`"))
+  utils::modifyList(
+    theme_code(dark),
+    list(transform = tick_formatter)
+  )
 }
 
 theme_function <- function(dark) {
-  utils::modifyList(theme_code(dark), list(before = "`", after = "()`"))
+  utils::modifyList(
+    theme_code(dark),
+    list(transform = tick_formatter_fun)
+  )
 }
 
 format_r_code <- function(dark) {

@@ -31,7 +31,7 @@
         stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
       })
     Error <simpleError>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -81,7 +81,7 @@
         stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
       })
     Error <simpleError>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -127,7 +127,7 @@
       n <- "boo"
       warning(format_warning(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Warning <simpleWarning>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -173,7 +173,7 @@
       n <- "boo"
       warning(format_warning(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Warning <simpleWarning>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -219,7 +219,7 @@
       n <- "boo"
       message(format_message(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Message <simpleMessage>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31mx[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -265,7 +265,7 @@
       n <- "boo"
       message(format_message(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.")))
     Message <simpleMessage>
-      [1m[22m[30m[47m`n`[49m[39m must be a numeric vector
+      [1m[22m`n` must be a numeric vector
       [31m✖[39m You've supplied a [34m<character>[39m vector.
 
 ---
@@ -362,4 +362,68 @@
       format_message(msg)
     Output
       [1] "1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890 1234567890"
+
+# suppressing Unicode bullets [plain]
+
+    Code
+      local({
+        n <- "boo"
+        stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.",
+          v = "Success.", i = "Info.", `*` = "Bullet", `>` = "Arrow")))
+      })
+    Error <simpleError>
+      `n` must be a numeric vector
+      x You've supplied a <character> vector.
+      v Success.
+      i Info.
+      * Bullet
+      > Arrow
+
+# suppressing Unicode bullets [ansi]
+
+    Code
+      local({
+        n <- "boo"
+        stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.",
+          v = "Success.", i = "Info.", `*` = "Bullet", `>` = "Arrow")))
+      })
+    Error <simpleError>
+      [1m[22m`n` must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
+      [32mv[39m Success.
+      [36mi[39m Info.
+      [36m*[39m Bullet
+      > Arrow
+
+# suppressing Unicode bullets [unicode]
+
+    Code
+      local({
+        n <- "boo"
+        stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.",
+          v = "Success.", i = "Info.", `*` = "Bullet", `>` = "Arrow")))
+      })
+    Error <simpleError>
+      `n` must be a numeric vector
+      x You've supplied a <character> vector.
+      v Success.
+      i Info.
+      * Bullet
+      > Arrow
+
+# suppressing Unicode bullets [fancy]
+
+    Code
+      local({
+        n <- "boo"
+        stop(format_error(c("{.var n} must be a numeric vector", x = "You've supplied a {.cls {class(n)}} vector.",
+          v = "Success.", i = "Info.", `*` = "Bullet", `>` = "Arrow")))
+      })
+    Error <simpleError>
+      [1m[22m`n` must be a numeric vector
+      [31mx[39m You've supplied a [34m<character>[39m vector.
+      [32mv[39m Success.
+      [36mi[39m Info.
+      [36m*[39m Bullet
+      > Arrow
 
