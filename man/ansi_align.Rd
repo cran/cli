@@ -27,7 +27,7 @@ The aligned character vector.
 Align an ANSI colored string
 }
 \details{
-\if{html}{\out{<div class="sourceCode asciicast">}}\preformatted{str <- c(
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{str <- c(
   col_red("This is red"),
   style_bold("This is bold")
 )
@@ -35,7 +35,9 @@ astr <- ansi_align(str, width = 30)
 boxx(astr)
 }\if{html}{\out{</div>}}
 
-\if{html}{\figure{ansi-align.svg}}\if{html}{\out{<div class="sourceCode r">}}\preformatted{str <- c(
+\if{html}{\figure{ansi-align.svg}}
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{str <- c(
   col_red("This is red"),
   style_bold("This is bold")
 )
@@ -43,7 +45,9 @@ astr <- ansi_align(str, align = "center", width = 30)
 boxx(astr)
 }\if{html}{\out{</div>}}
 
-\if{html}{\figure{ansi-align-center.svg}}\if{html}{\out{<div class="sourceCode r">}}\preformatted{str <- c(
+\if{html}{\figure{ansi-align-center.svg}}
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{str <- c(
   col_red("This is red"),
   style_bold("This is bold")
 )

@@ -29,8 +29,10 @@ style_hyperlink <- function(text, url, params = NULL) {
     glue::glue("{names(params)}={params}")
   )
 
+  ST <- "\u0007"
+
   out <- if (ansi_has_hyperlink_support()) {
-    paste0("\u001B]8;", params, ";", url, "\u0007", text, "\u001B]8;;\u0007")
+    paste0("\u001B]8;", params, ";", url, ST, text, "\u001B]8;;", ST)
   } else {
     text
   }
@@ -52,6 +54,19 @@ ansi_has_hyperlink_support <- function() {
 
   ## forced by environment variable
   enabled <- Sys.getenv("R_CLI_HYPERLINKS", "")
+  if (isTRUE(as.logical(enabled))){ return(TRUE) }
+
+  ## If ANSI support is off, then this is off as well
+  opt <- as.integer(getOption("cli.num_colors", NULL))[1]
+  if (!is.na(opt) && opt == 1) return(FALSE)
+  env <- as.integer(Sys.getenv("R_CLI_NUM_COLORS", ""))[1]
+  if (!is.na(env) && env == 1) return(FALSE)
+  cray_opt <- as.logical(getOption("crayon.enabled", NULL))[1]
+  if (!is.na(cray_opt) && !cray_opt) return(FALSE)
+  if (!is.na(Sys.getenv("NO_COLOR", NA_character_))) return(FALSE)
+
+  ## environment variable used by RStudio
+  enabled <- Sys.getenv("RSTUDIO_CLI_HYPERLINKS", "")
   if (isTRUE(as.logical(enabled))){ return(TRUE) }
 
   ## Are we in a terminal? No?
@@ -76,7 +91,18 @@ ansi_has_hyperlink_support <- function() {
   }
 
   if (nzchar(VTE_VERSION <- Sys.getenv("VTE_VERSION"))) {
-    if (package_version(VTE_VERSION) >= "0.50.1")  return(TRUE)
+    # See #441 -- some apparent heterogeneity in how the version gets
+    #   encoded to this env variable. Accept either form.
+    if (grepl("^\\d{4}$", VTE_VERSION)) {
+      VTE_VERSION <- as.numeric(VTE_VERSION) / 100
+      VTE_VERSION <- package_version(list(major = 0, minor = VTE_VERSION))
+    } else {
+      VTE_VERSION <- package_version(VTE_VERSION, strict = FALSE)
+      if (is.na(VTE_VERSION)) {
+        VTE_VERSION <- package_version("0.1.0")
+      }
+    }
+    if (VTE_VERSION >= "0.50.1") return(TRUE)
   }
 
   FALSE

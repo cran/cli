@@ -69,12 +69,6 @@ test_style <- function() {
   )
 }
 
-# to work around https://github.com/r-lib/withr/issues/167
-local_rng_version <- function(version, .local_envir = parent.frame()) {
-  withr::defer(RNGversion(as.character(getRversion())), envir = .local_envir)
-  suppressWarnings(RNGversion(version))
-}
-
 fix_times <- function(out) {
   out <- sub("[(][ ]*[.0-9]+ [Mk]B/s[)]", "(8.5 MB/s)", out)
   out <- sub("[(][.0-9]+/s[)]", "(100/s)", out)
@@ -163,4 +157,12 @@ expect_snapshot <- function(...) {
     skip("testthat bug with snapshots")
   }
   testthat::expect_snapshot(...)
+}
+
+st_from_bel <- function(x) {
+  gsub("\007", "\033\\", x, fixed = TRUE)
+}
+
+st_to_bel <- function(x) {
+  gsub("\033\\", "\007", x, fixed = TRUE)
 }
