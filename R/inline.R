@@ -2,6 +2,14 @@
 if (getRversion() >= "2.15.1") utils::globalVariables("app")
 
 inline_generic <- function(app, x, style) {
+
+  if (is.character(x) && any(grepl("\n", x))) {
+    if (getOption("cli.warn_inline_newlines", FALSE)) {
+      warning("cli replaced newlines within {. ... } with spaces")
+    }
+    x <- gsub_("\n", " ", x, useBytes = TRUE, fixed = TRUE)
+  }
+
   before <- call_if_fun(style$before)
   after <- call_if_fun(style$after)
   transform <- style$transform
@@ -28,22 +36,30 @@ inline_generic <- function(app, x, style) {
       xx <- vcapply(xx, fmt, app = app, style = style)
     }
   }
-  xx
+  prefix <- call_if_fun(style$prefix)
+  postfix <- call_if_fun(style$postfix)
+
+  paste0(prefix, xx, postfix)
 }
 
 inline_collapse <- function(x, style = list()) {
-  sep <- style[["vec_sep"]] %||% ", "
+  sep <- style[["vec-sep"]] %||% style[["vec_sep"]] %||% ", "
   if (length(x) >= 3) {
-    last <- style$vec_last %||% ", and "
+    last <- style[["vec-last"]] %||% style[["vec_last"]] %||% ", and "
   } else {
-    last <- style$vec_sep2 %||% style$vec_last %||% " and "
+    last <- style[["vec-sep2"]] %||% style[["vec_sep2"]] %||% style[["vec-last"]] %||%
+      style[["vec_last"]] %||% " and "
   }
-  trunc <- style$vec_trunc %||% 100L
-  if (length(x) > trunc) {
-    x <- c(x[1:trunc], cli::symbol$ellipsis)
-    last <- sep
-  }
-  glue::glue_collapse(as.character(x), sep = sep, last = last)
+  trunc <- style[["vec-trunc"]] %||% style[["vec_trunc"]] %||% 20L
+  col_style <- style[["vec-trunc-style"]] %||% "both-ends"
+
+  collapse(
+    x,
+    sep = sep,
+    last = last,
+    trunc = trunc,
+    style = col_style
+  )
 }
 
 #' This glue transformer performs the inline styling of cli
@@ -125,19 +141,18 @@ inline_transformer <- function(code, envir) {
     # but only to the whole non-brace expression. We don't need to end this
     # container, because the one above (`id`) will end this one as well.
 
-    braceexp <- grepl("^[{][^.][^}]*[}]$", text)
+    braceexp <- grepl("^[<][^.][^}]*[>]$", text) &&
+      count_brace_exp(text, .open = "<", .close = ">") == 1
     if (!braceexp) {
       id2 <- clii__container_start(app, "span", class = NULL)
     }
 
-    out <- glue::glue(
+    out <- glue(
       text,
       .envir = envir,
       .transformer = inline_transformer,
-      .open = paste0("{", envir$marker),
-      .close = paste0(envir$marker, "}"),
-      .trim = TRUE,
-      .comment = ""
+      .open = paste0("<", envir$marker),
+      .close = paste0(envir$marker, ">")
     )
 
     # If we don't have a brace expression, then (non-inherited) styling was
@@ -211,14 +226,12 @@ clii__inline <- function(app, text, .list) {
   texts <- c(if (!is.null(text)) list(text), .list)
   out <- lapply(texts, function(t) {
     t$values$app <- app
-    glue::glue(
+    glue(
       t$str,
       .envir = t$values,
       .transformer = inline_transformer,
-      .open = paste0("{", t$values$marker),
-      .close = paste0(t$values$marker, "}"),
-      .trim = TRUE,
-      .comment = ""
+      .open = paste0("<", t$values$marker),
+      .close = paste0(t$values$marker, ">")
     )
   })
   paste(out, collapse = "")
@@ -233,19 +246,33 @@ make_cmd_transformer <- function(values) {
   values$postprocess <- FALSE
   values$pmarkers <- list()
 
+  # These are common because of purrr's default argument names, so we
+  # hardcode them es exceptions. They are in packages
+  # crossmap, crosstable, rstudio.prefs, rxode2, starter.
+  # rxode2 has the other ones, and we should fix that in rxode2
+  # the function calls are in the oolong packagee, need to fix this as well.
+  exceptions <- c(
+    ".x", ".y", ".",
+    ".md", ".met", ".med", ".mul", ".muR", ".dir", ".muU",
+    ".sym_flip(bool_word)", ".sym_flip(bool_topic)", ".sym_flip(bool_wsi)"
+  )
+
   function(code, envir) {
     res <- tryCatch({
+      if (substr(code, 1, 1) == "." &&
+          ! code %in% exceptions) {
+        stop("style")
+      }
       expr <- parse(text = code, keep.source = FALSE)
       eval(expr, envir = list("?" = function(...) stop()), enclos = envir)
     }, error = function(e) e)
 
     if (!inherits(res, "error")) {
       id <- paste0("v", length(values))
-      if (length(res) == 0) res <- qty(0)
       values[[id]] <- res
-      values$qty <- res
+      values$qty <- if (length(res) == 0) 0 else res
       values$num_subst <- values$num_subst + 1L
-      return(paste0("{", values$marker, id, values$marker, "}"))
+      return(paste0("<", values$marker, id, values$marker, ">"))
     }
 
     # plurals
@@ -264,14 +291,13 @@ make_cmd_transformer <- function(values) {
       funname <- captures[[1]]
       text <- captures[[2]]
 
-      out <- glue::glue(
+      out <- glue(
         text,
         .envir = envir,
         .transformer = sys.function(),
-        .trim = TRUE,
-        .comment = ""
+        .cli = TRUE
       )
-      paste0("{", values$marker, ".", funname, " ", out, values$marker, "}")
+      paste0("<", values$marker, ".", funname, " ", out, values$marker, ">")
     }
   }
 }
@@ -280,12 +306,11 @@ glue_cmd <- function(..., .envir) {
   str <- paste0(unlist(list(...), use.names = FALSE), collapse = "")
   values <- new.env(parent = emptyenv())
   transformer <- make_cmd_transformer(values)
-  pstr <- glue::glue(
+  pstr <- glue(
     str,
     .envir = .envir,
     .transformer = transformer,
-    .trim = TRUE,
-    .comment = ""
+    .cli = TRUE
   )
   glue_delay(
     str = post_process_plurals(pstr, values),

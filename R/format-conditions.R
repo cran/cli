@@ -46,7 +46,7 @@ format_error <- function(message, .envir = parent.frame()) {
   # We need to create a frame here, so cli_div() is closed.
   # Cannot use local(), it does not work in snapshot tests, it potentially
   # has issues elsewhere as well.
-  formatted1 <- fmt((function() {
+  formatted1 <- cli_fmt((function() {
     cli_div(class = "cli_rlang cli_abort", theme = cnd_theme())
     cli_bullets(message, .envir = .envir)
   })(), collapse = TRUE, strip_newline = TRUE)
@@ -71,7 +71,7 @@ format_warning <- function(message, .envir = parent.frame()) {
   )
   on.exit(options(oldopt), add = TRUE)
 
-  formatted1 <- fmt((function() {
+  formatted1 <- cli_fmt((function() {
     cli_div(class = "cli_rlang cli_warn", theme = cnd_theme())
     cli_bullets(message, .envir = .envir)
   })(), collapse = TRUE, strip_newline = TRUE)
@@ -87,7 +87,7 @@ format_message <- function(message, .envir = parent.frame()) {
     cli.width = getOption("cli.condition_width") %||% getOption("cli.width")
   )
   on.exit(options(oldopt), add = TRUE)
-  formatted1 <- fmt((function() {
+  formatted1 <- cli_fmt((function() {
     cli_div(class = "cli_rlang cli_inform", theme = cnd_theme())
     cli_bullets(message, .envir = .envir)
   })(), collapse = TRUE, strip_newline = TRUE)
@@ -118,7 +118,7 @@ get_rstudio_fg_color0 <- function() {
   oktypes <- c("rstudio_console", "rstudio_console_starting")
   if (! rs$type %in% oktypes) return(NULL)
   if (rs$num_colors == 1) return(NULL)
-  colstr <- rstudioapi::getThemeInfo()$foreground
+  colstr <- get_rstudio_theme()$foreground
   if (is.null(colstr)) return(NULL)
   colstr0 <- substr(colstr, 5, nchar(colstr) - 1)
   rgbnum <- scan(text = colstr0, sep = ",", quiet = TRUE)

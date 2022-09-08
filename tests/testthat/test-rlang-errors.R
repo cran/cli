@@ -1,6 +1,3 @@
-
-if (packageVersion("rlang") != "1.0.2") return()
-
 test_that_cli("cli_abort", {
   withr::local_options(cli.theme_dark = FALSE)
   expect_snapshot(error = TRUE, local({
@@ -132,7 +129,7 @@ test_that_cli(config = "ansi", "color in RStudio", {
   )
   mockery::stub(
     get_rstudio_fg_color0,
-    "rstudioapi::getThemeInfo",
+    "get_rstudio_theme",
     list(foreground = "rgb(0, 0, 0)")
   )
   expect_snapshot({
@@ -142,7 +139,7 @@ test_that_cli(config = "ansi", "color in RStudio", {
 
   mockery::stub(
     get_rstudio_fg_color0,
-    "rstudioapi::getThemeInfo",
+    "get_rstudio_theme",
     list()
   )
   expect_null(get_rstudio_fg_color0())
@@ -196,5 +193,17 @@ test_that("cli_abort() captures correct call and backtrace", {
 
   expect_snapshot({
     print(expect_error(f(list())))
+  })
+})
+
+test_that("cli_abort(.internal = TRUE) reports the correct function (r-lib/rlang#1386)", {
+  fn <- function() {
+    cli::cli_abort("Message.", .internal = TRUE)
+  }
+  environment(fn) <- rlang::ns_env("base")
+
+  # Should mention an internal error in the `base` package
+  expect_snapshot({
+    (expect_error(fn()))
   })
 })

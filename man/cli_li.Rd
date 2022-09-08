@@ -6,6 +6,7 @@
 \usage{
 cli_li(
   items = NULL,
+  labels = names(items),
   id = NULL,
   class = NULL,
   .auto_close = TRUE,
@@ -14,6 +15,8 @@ cli_li(
 }
 \arguments{
 \item{items}{Character vector of items, or \code{NULL}.}
+
+\item{labels}{For definition lists the item labels.}
 
 \item{id}{Id of the new container. Can be used for closing it with
 \code{\link[=cli_end]{cli_end()}} or in themes. If \code{NULL}, then an id is generated and
@@ -45,8 +48,16 @@ A list item is a container, see \link{containers}.
   cli_end(ul)
 \}
 fun()
-}\if{html}{\out{</div>}}
+}\if{html}{\out{</div>}}\if{html}{\out{
+<div class="asciicast" style="color: #172431;font-family: 'Fira Code',Monaco,Consolas,Menlo,'Bitstream Vera Sans Mono','Powerline Symbols',monospace;line-height: 1.300000"><pre>
+#> • one:                                                                          
+#>   1. a                                                                          
+#>   2. b                                                                          
+#>   3. c                                                                          
+#> • two:                                                                          
+#> • three                                                                         
+</pre></div>
+}}
 
-\if{html}{\figure{cli-li.svg}}
 }
 }

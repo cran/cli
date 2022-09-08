@@ -4,7 +4,12 @@
 \alias{test_that_cli}
 \title{Test cli output with testthat}
 \usage{
-test_that_cli(desc, code, configs = NULL)
+test_that_cli(
+  desc,
+  code,
+  configs = c("plain", "ansi", "unicode", "fancy"),
+  links = NULL
+)
 }
 \arguments{
 \item{desc}{Test description, passed to \code{\link[testthat:test_that]{testthat::test_that()}}, after
@@ -17,6 +22,14 @@ then passed to \code{\link[testthat:test_that]{testthat::test_that()}}}
 \code{NULL}, which includes all possible configurations. It can also be a
 character vector, to restrict the tests to some configurations only.
 See available configurations below.}
+
+\item{links}{Whether to run the code with various hyperlinks allowed.
+If \code{NULL} then hyperlinks are turned off. Otherwise it can be a character
+vector with possible hyperlink configurations:
+\itemize{
+\item \code{"all"}: turn on all hyperlinks,
+\item \code{"none"}: turn off all hyperlinks.
+}}
 }
 \description{
 Use this function in your testthat test files, to test cli output.
@@ -36,9 +49,9 @@ Currently available configurations:
 }
 
 See examples below and in cli's own tests, e.g. in
-\url{https://github.com/cran/cli/tree/master/tests/testthat}
+\url{https://github.com/r-lib/cli/tree/main/tests/testthat}
 and the corresponding snapshots at
-\url{https://github.com/cran/cli/tree/master/tests/testthat/_snaps}
+\url{https://github.com/r-lib/cli/tree/main/tests/testthat/_snaps}
 \subsection{Important note regarding Windows}{
 
 Because of base R's limitation to record Unicode characters on Windows,

@@ -1,43 +1,4 @@
 
-#' @details
-#' ```{r setup, cache = FALSE}
-#' init_knitr_for_roxygen()
-#' ```
-#' @noRd
-#'
-NULL
-
-init_knitr_for_roxygen <- function() {
-  # Make progress bars a bit smoother
-  Sys.setenv(CLI_TICK_TIME = "100")
-
-  # Turn on ANSI colors
-  options(
-    cli.num_colors = 256L,
-    asciicast_cols = 70
-  )
-
-  proc <- .GlobalEnv$.knitr_asciicast_process
-  if (is.null(proc) || !proc$is_alive()) {
-    asciicast::init_knitr_engine(
-      startup = quote({
-        options(cli.width = 70)
-        options(cli.progress_show_after = 0)
-        options(cli.progress_clear = FALSE)
-        library(cli)
-        set.seed(1) }),
-      echo = TRUE,
-      echo_input = FALSE,
-      options = list(
-        asciicast_cols = 70,
-        asciicast_end_wait = 3
-      )
-    )
-  }
-
-  invisible("")
-}
-
 `%||%` <- function(l, r) if (is.null(l)) r else l
 
 new_class <- function(class_name, ...) {
@@ -170,13 +131,6 @@ str_trim <- function(x) {
   sub("^\\s+", "", sub("\\s+$", "", x))
 }
 
-has_asciicast_support <- function() {
- tryCatch({
-   asNamespace("asciicast")$is_recording_supported() &&
-     asNamespace("asciicast")$is_svg_supported()
- }, error = function(e) FALSE)
-}
-
 last_character <- function(x) {
   substr(x, nchar(x), nchar(x))
 }
@@ -203,4 +157,8 @@ leading_space <- function(x) {
 
 trailing_space <- function(x) {
   sub("^.*[^\\s\u00a0]([\\s\u00a0]*)$", "\\1", x, perl = TRUE)
+}
+
+get_rstudio_theme <- function() {
+  suppressWarnings(rstudioapi::getThemeInfo())
 }

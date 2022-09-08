@@ -10,6 +10,7 @@
 
 SEXP clic_diff_chr(SEXP a, SEXP b, SEXP max);
 
+SEXP clic_getppid();
 SEXP clic_md5(SEXP strs);
 SEXP clic_md5_raw(SEXP r);
 SEXP clic_sha256(SEXP strs);
@@ -119,5 +120,10 @@ void clic_utf8_graphscan_make(struct grapheme_iterator *iter,
 void clic_utf8_graphscan_next(struct grapheme_iterator *iter,
                               uint8_t **ptr,
                               int *width);
+
+SEXP glue_(SEXP x, SEXP f, SEXP open_arg, SEXP close_arg);
+SEXP trim_(SEXP x);
+
+SEXP clic_vt_output(SEXP bytes, SEXP width, SEXP height);
 
 #endif

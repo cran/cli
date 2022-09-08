@@ -24,7 +24,13 @@
 
 cli <- function(expr) {
   cond <- cli__message_create("meta", cli__rec(expr))
-  cli__message_emit(cond)
+  # cli() might be nested
+  record <- getOption("cli.record")
+  if (is.null(record)) {
+    cli__message_emit(cond)
+  } else {
+    cli_recorded[[record]] <- c(cli_recorded[[record]], list(cond))
+  }
   invisible()
 }
 
@@ -43,8 +49,9 @@ cli__fmt <- function(record, collapse = FALSE, strip_newline = FALSE,
   app <- app %||% default_app() %||% start_app(.auto_close = FALSE)
 
   old <- app$output
+  oldsig <- app$signal
   on.exit(app$output <- old, add = TRUE)
-  on.exit(app$signal <- NULL, add = TRUE)
+  on.exit(app$signal <- oldsig, add = TRUE)
   out <- rawConnection(raw(1000), open = "wb")
   on.exit(close(out), add = TRUE)
   app$output <- out
@@ -64,11 +71,24 @@ cli__fmt <- function(record, collapse = FALSE, strip_newline = FALSE,
   txt
 }
 
-# cli__rec + cli__fmt
+#' Capture the output of cli functions instead of printing it
+#'
+#' @param expr Expression to evaluate, containing `cli_*()` calls,
+#'   typically.
+#' @param collapse Whether to collapse the output into a single character
+#'   scalar, or return a character vector with one element for each line.
+#' @param strip_newline Whether to strip the trailing newline.
+#'
+#' @export
+#' @examples
+#' cli_fmt({
+#'   cli_alert_info("Loading data file")
+#'   cli_alert_success("Loaded data file")
+#' })
 
-fmt <- function(expr, collapse = FALSE, strip_newline = FALSE, app = NULL) {
+cli_fmt <- function(expr, collapse = FALSE, strip_newline = FALSE) {
   rec <- cli__rec(expr)
-  cli__fmt(rec, collapse, strip_newline, app)
+  cli__fmt(rec, collapse, strip_newline)
 }
 
 #' Format and returns a line of text
@@ -89,7 +109,7 @@ fmt <- function(expr, collapse = FALSE, strip_newline = FALSE, app = NULL) {
 format_inline <- function(..., .envir = parent.frame()) {
   opts <- options(cli.width = Inf)
   on.exit(options(opts), add = TRUE)
-  fmt(cli_text(..., .envir = .envir))
+  cli_fmt(cli_text(..., .envir = .envir))
 }
 
 #' CLI text
@@ -536,13 +556,14 @@ cli_ol <- function(items = NULL, id = NULL, class = NULL,
 #'
 #' @param items Named character vector, or `NULL`. If not `NULL`, they
 #'   are used as list items.
+#' @param labels Item labels. Defaults the names in `items`.
 #' @inheritParams cli_ul
 #' @return The id of the new container element, invisibly.
 #'
 #' @export
 
-cli_dl <- function(items = NULL, id = NULL, class = NULL,
-                   .close = TRUE, .auto_close = TRUE,
+cli_dl <- function(items = NULL, labels = names(items), id = NULL,
+                   class = NULL, .close = TRUE, .auto_close = TRUE,
                    .envir = parent.frame()) {
   if (!is.null(items) && !is_named(items)) {
     stop("`items` must be a named character vector.")
@@ -551,7 +572,9 @@ cli_dl <- function(items = NULL, id = NULL, class = NULL,
   cli__message(
     "dl",
     list(
-      items = lapply(items, glue_cmd, .envir = .envir), id = id,
+      items = lapply(items, glue_cmd, .envir = .envir),
+      labels = if (!is.null(labels)) lapply(labels, glue_cmd, .envir = .envir),
+      id = id,
       class = class, .close = .close),
     .auto_close = .auto_close, .envir = .envir)
 }
@@ -577,6 +600,7 @@ cli_dl <- function(items = NULL, id = NULL, class = NULL,
 #' ```
 #'
 #' @param items Character vector of items, or `NULL`.
+#' @param labels For definition lists the item labels.
 #' @param id Id of the new container. Can be used for closing it with
 #'   [cli_end()] or in themes. If `NULL`, then an id is generated and
 #'   returned invisibly.
@@ -586,12 +610,15 @@ cli_dl <- function(items = NULL, id = NULL, class = NULL,
 #'
 #' @export
 
-cli_li <- function(items = NULL, id = NULL, class = NULL,
-                   .auto_close = TRUE, .envir = parent.frame()) {
+cli_li <- function(items = NULL, labels = names(items), id = NULL,
+                   class = NULL, .auto_close = TRUE,
+                   .envir = parent.frame()) {
   cli__message(
     "li",
     list(
-      items = lapply(items, glue_cmd, .envir = .envir), id = id,
+      items = lapply(items, glue_cmd, .envir = .envir),
+      labels = if (!is.null(labels)) lapply(labels, glue_cmd, .envir = .envir),
+      id = id,
       class = class),
     .auto_close = .auto_close, .envir = .envir)
 }
@@ -635,7 +662,7 @@ cli_li <- function(items = NULL, id = NULL, class = NULL,
 #'
 #' Alerts are printed without wrapping, unless you set `wrap = TRUE`:
 #'
-#' ```{asciicast alert-wrap, R.options = list(asciicast_rows = 4)}
+#' ```{asciicast alert-wrap, asciicast_rows = 4}
 #' cli_alert_info("Data columns: {.val {names(mtcars)}}.")
 #' cli_alert_info("Data columns: {.val {names(mtcars)}}.", wrap = TRUE)
 #' ```
@@ -873,12 +900,11 @@ cli__message <- function(type, args, .auto_close = TRUE, .envir = NULL,
 
   if (is.null(record)) {
     cli__message_emit(cond)
-    invisible(args$id)
-
   } else {
     cli_recorded[[record]] <- c(cli_recorded[[record]], list(cond))
-    invisible(cond)
   }
+
+  invisible(args$id)
 }
 
 cli__message_create <- function(type, args) {

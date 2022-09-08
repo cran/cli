@@ -12,7 +12,7 @@ cliapp <- function(theme = getOption("cli.theme"),
     ## Meta
     meta = function(...) {
       txt <- cli__fmt(list(...), collapse = TRUE, app = app)
-      clii__message(txt, appendLF = FALSE, output = app$output, signal = TRUE)
+      clii__message(txt, appendLF = FALSE, output = app$output, signal = app$signal)
     },
 
     ## Themes
@@ -64,10 +64,10 @@ cliapp <- function(theme = getOption("cli.theme"),
       clii_ul(app, items, id, class, .close),
     ol = function(items = NULL, id = NULL, class = NULL, .close = TRUE)
       clii_ol(app, items, id, class, .close),
-    dl = function(items = NULL, id = NULL, class = NULL, .close = TRUE)
-      clii_dl(app, items, id, class, .close),
-    li = function(items = NULL, id = NULL, class = NULL)
-      clii_li(app, items, id, class),
+    dl = function(items = NULL, labels = NULL, id = NULL, class = NULL, .close = TRUE)
+      clii_dl(app, items, labels, id, class, .close),
+    li = function(items = NULL, labels = NULL, id = NULL, class = NULL)
+      clii_li(app, items, labels, id, class),
 
     ## Tables
     table = function(cells, id = NULL, class = NULL)

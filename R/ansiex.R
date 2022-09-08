@@ -505,14 +505,36 @@ ansi_strwrap <- function(x, width = console_width(), indent = 0,
   # se we need to put in a random marker instead
   mark <- "yShtnpteEk"
   smark <- paste0("\n\n", mark, "\n\n")
-  x <- gsub("\f", smark, x, fixed = TRUE, useBytes = TRUE)
+  x <- gsub_("\f", smark, x, fixed = TRUE, useBytes = TRUE)
   fix_ff <- function(x) {
-    rem <- which(ansi_strip(x) == mark)
+    xs <- ansi_strip(x)
+    rem <- which(xs == mark)
     if (length(rem)) {
-      x[-c(rem - 1, rem, rem + 1)]
+      x <- x[-c(rem - 1, rem + 1)]
+      xs <- xs[-c(rem - 1, rem + 1)]
+      if (xs[length(xs)] == mark) {
+        x <- c(x, mark)
+        xs <- c(xs, mark)
+      }
+      if (length(x) >= 2 && x[1] == "" && xs[2] == mark) {
+        x <- x[-1]
+        xs <- xs[-1]
+      }
+      # At this point, we have as many marks as many newlines we need
+      # But (except for the begnning) we need one less empty lines than
+      # newlines, because an empty line corresponds to two newlines at
+      # the end of a non-empty line.
+      del <- which(xs[-1] == mark & xs[-length(xs)] != mark) + 1L
+      if (length(del) > 0) {
+        x <- x[-del]
+        xs <- xs[-del]
+      }
+      x[xs == mark] <- ""
+      x
     } else {
       x
     }
+
   }
 
   # First we need to remove the multiple spaces, to make it easier to
@@ -824,9 +846,9 @@ ansi_html <- function(x, escape_reserved = TRUE, csi = c("drop", "keep")) {
   csi <- match.arg(csi)
   x <- enc2utf8(x)
   if (escape_reserved) {
-    x <- gsub("&", "&amp;", x, fixed = TRUE, useBytes = TRUE)
-    x <- gsub("<", "&lt;",  x, fixed = TRUE, useBytes = TRUE)
-    x <- gsub(">", "&gt;",  x, fixed = TRUE, useBytes = TRUE)
+    x <- gsub_("&", "&amp;", x, fixed = TRUE, useBytes = TRUE)
+    x <- gsub_("<", "&lt;",  x, fixed = TRUE, useBytes = TRUE)
+    x <- gsub_(">", "&gt;",  x, fixed = TRUE, useBytes = TRUE)
   }
   .Call(clic_ansi_html, x, csi == "keep")
 }
@@ -935,4 +957,76 @@ format.cli_ansi_html_style <- function(x, ...) {
 
 print.cli_ansi_html_style <- function(x, ...) {
   cat(format(x, ...), sep = "\n")
+}
+
+#' Like [base::grep()] and [base::grepl()], but for ANSI strings
+#'
+#' First ANSI sequences will be stripped with [ansi_strip()], both
+#'
+#' Note that these functions work on code points (or bytes if
+#' `useBytes = TRUE`), and not graphemes.
+#'
+#' Unlike [base::grep()] and [base::grepl()] these functions do not special
+#' case factors.
+#'
+#' Both `pattern` and `x` are converted to UTF-8.
+#'
+#' @param pattern Character scalar, regular expression or fixed string
+#'   (if `fixed = TRUE`), the pattern to search for. Other objects will be
+#'   coerced using [as.character()].
+#' @param x Character vector to search in. Other objects will be coerced
+#'   using [as.character()].
+#' @param ignore.case,perl,value Passed to [base::grep()].
+#' @param ... Extra arguments are passed to [base::grep()] or [base::grepl()].
+#' @return The same as [base::grep()] and [base::grepl()], respectively.
+#'
+#' @export
+#' @examples
+#' red_needle <- col_red("needle")
+#' haystack <- c("foo", "needle", "foo")
+#' green_haystack <- col_green(haystack)
+#' ansi_grepl(red_needle, haystack)
+#' ansi_grepl(red_needle, green_haystack)
+
+ansi_grep <- function(pattern, x, ignore.case = FALSE, perl = FALSE,
+                      value = FALSE, ...) {
+
+  # if value = FALSE, then we want to return the original values as
+  # ansi strings, so we need to special case that
+  if (value) {
+    idx <- ansi_grep(pattern, x, ignore.case = ignore.case, perl = perl,
+                     value = FALSE, ...)
+    ansi_string(x[idx])
+  } else {
+    ansi_grep_internal(grep, pattern, x, ignore.case = ignore.case,
+                       perl = perl, value = value, ...)
+  }
+}
+
+#' @rdname ansi_grep
+#' @export
+
+ansi_grepl <- function(pattern, x, ...) {
+  ansi_grep_internal(grepl, pattern, x, ...)
+}
+
+ansi_grep_internal <- function(fun, pattern, x, ...) {
+  pattern <- ansi_strip(pattern)
+  x <- ansi_strip(x)
+  fun(pattern, x, ...)
+}
+
+#' Like [base::nzchar()], but for ANSI strings
+#'
+#' @param x Charcater vector. Other objects are coarced using
+#'   [base::as.character()].
+#' @param ... Passed to [base::nzchar()].
+#' @export
+#' @examples
+#' ansi_nzchar("")
+#' ansi_nzchar(col_red(""))
+
+ansi_nzchar <- function(x, ...) {
+  x <- ansi_strip(x)
+  nzchar(x, ...)
 }

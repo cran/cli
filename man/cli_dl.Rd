@@ -6,6 +6,7 @@
 \usage{
 cli_dl(
   items = NULL,
+  labels = names(items),
   id = NULL,
   class = NULL,
   .close = TRUE,
@@ -16,6 +17,8 @@ cli_dl(
 \arguments{
 \item{items}{Named character vector, or \code{NULL}. If not \code{NULL}, they
 are used as list items.}
+
+\item{labels}{Item labels. Defaults the names in \code{items}.}
 
 \item{id}{Id of the list container. Can be used for closing it with
 \code{\link[=cli_end]{cli_end()}} or in themes. If \code{NULL}, then an id is generated and
@@ -45,9 +48,14 @@ A definition list is a container, see \link{containers}.
   cli_dl(c(foo = "one", bar = "two", baz = "three"))
 \}
 fun()
-}\if{html}{\out{</div>}}
+}\if{html}{\out{</div>}}\if{html}{\out{
+<div class="asciicast" style="color: #172431;font-family: 'Fira Code',Monaco,Consolas,Menlo,'Bitstream Vera Sans Mono','Powerline Symbols',monospace;line-height: 1.300000"><pre>
+#> foo: one                                                                        
+#> bar: two                                                                        
+#> baz: three                                                                      
+</pre></div>
+}}
 
-\if{html}{\figure{cli-dl.svg}}
 }
 
 \subsection{Items one by one}{
@@ -59,8 +67,13 @@ fun()
   cli_li(c(baz = "three"))
 \}
 fun()
-}\if{html}{\out{</div>}}
+}\if{html}{\out{</div>}}\if{html}{\out{
+<div class="asciicast" style="color: #172431;font-family: 'Fira Code',Monaco,Consolas,Menlo,'Bitstream Vera Sans Mono','Powerline Symbols',monospace;line-height: 1.300000"><pre>
+#> foo: <span style="font-style: italic;">one</span>                                                                        
+#> bar: two                                                                        
+#> baz: three                                                                      
+</pre></div>
+}}
 
-\if{html}{\figure{cli-dl-2.svg}}
 }
 }

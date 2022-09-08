@@ -165,7 +165,7 @@ builtin_theme <- function(dark = getOption("cli.theme_dark", "auto")) {
     ),
 
     # these are tags in HTML, but in cli they are inline
-    span.dt = list(after = ": "),
+    span.dt = list(postfix = ": "),
     span.dd = list(),
 
     # This means that list elements have a margin, if they are nested
@@ -204,11 +204,33 @@ builtin_theme <- function(dark = getOption("cli.theme_dark", "auto")) {
     span.arg = theme_code_tick(dark),
     span.kbd = list(before = "[", after = "]", color = "blue"),
     span.key = list(before = "[", after = "]", color = "blue"),
-    span.file = list(color = "blue", fmt = quote_weird_name),
-    span.path = list(color = "blue", fmt = quote_weird_name),
-    span.email = list(color = "blue", fmt = quote_weird_name),
-    span.url = list(before = "<", after = ">", color = "blue",
-                    "font-style" = "italic"),
+    span.file = theme_file(),
+    span.path = theme_file(),
+    span.email = list(
+      color = "blue",
+      transform = function(x) make_link(x, type = "email"),
+      fmt = quote_weird_name
+    ),
+    span.url = list(
+      before = "<", after = ">",
+      color = "blue", "font-style" = "italic",
+      transform = function(x) make_link(x, type = "url")
+    ),
+    span.href = list(
+      transform = function(x) make_link(x, type = "href")
+    ),
+    span.help = list(
+      transform = function(x) make_link(x, type = "help")
+    ),
+    span.topic = list(
+      transform = function(x) make_link(x, type = "topic")
+    ),
+    span.vignette = list(
+      transform = function(x) make_link(x, type = "vignette")
+    ),
+    span.run = list(
+      transform = function(x) make_link(x, type = "run")
+    ),
     span.var = theme_code_tick(dark),
     span.col = theme_code_tick(dark),
     span.str = list(fmt = encode_string),
@@ -223,7 +245,10 @@ builtin_theme <- function(dark = getOption("cli.theme_dark", "auto")) {
       transform = theme_progress_bar,
       color = "green"
     ),
-    span.or = list(vec_sep2 = " or ", vec_last = ", or "),
+    span.obj_type_friendly = list(
+      transform = function(x) format_inline(typename(x))
+    ),
+    span.or = list("vec-sep2" = " or ", "vec-last" = ", or "),
     span.timestamp = list(before = "[", after = "]", color = "grey")
   )
 }
@@ -284,7 +309,7 @@ detect_dark_theme <- function(dark) {
   tryCatch({
     if (dark == "auto") {
       dark <- if (Sys.getenv("RSTUDIO", "0") == "1") {
-        rstudioapi::getThemeInfo()$dark
+        get_rstudio_theme()$dark
       } else if (is_iterm()) {
         is_iterm_dark()
       } else if (is_emacs()) {
@@ -326,7 +351,15 @@ theme_code_tick <- function(dark) {
 theme_function <- function(dark) {
   utils::modifyList(
     theme_code(dark),
-    list(transform = tick_formatter_fun)
+    list(transform = function(x) tick_formatter_fun(make_link(x, type = "fun")))
+  )
+}
+
+theme_file <- function() {
+  list(
+    color = "blue",
+    transform = function(x) make_link(x, type = "file"),
+    fmt = quote_weird_name
   )
 }
 
@@ -400,13 +433,20 @@ create_formatter <- function(x) {
 merge_embedded_styles <- function(old, new) {
   # before and after is not inherited, fmt is not inherited, either
   # side margins are additive, class mappings are merged
-  # rest is updated, counter is reset
+  # rest is updated, counter is reset, prefix and postfix are merged
   old$before <- old$after <- old$fmt <- NULL
+  old$transform <- NULL
+
+  # these will be applied on the container, so we don't need them inside
+  old$color <- old$`background-color` <- NULL
 
   top <- new$`margin-top` %||% 0L
   bottom <- new$`margin-bottom` %||% 0L
   left <- (old$`margin-left` %||% 0L) + (new$`margin-left` %||% 0L)
   right <- (old$`margin-right` %||% 0L) + (new$`margin-right` %||% 0L)
+
+  prefix <- paste0(old$prefix, new$prefix)
+  postfix <- paste0(new$postfix, old$postfix)
 
   map <- utils::modifyList(old$`class-map` %||% list(), new$`class-map` %||% list())
 
@@ -414,7 +454,8 @@ merge_embedded_styles <- function(old, new) {
 
   mrg <- utils::modifyList(old, new)
   mrg[c("margin-top", "margin-bottom", "margin-left", "margin-right",
-        "start", "class-map")] <- list(top, bottom, left, right, start, map)
+        "start", "class-map", "prefix", "postfix")] <-
+    list(top, bottom, left, right, start, map, prefix, postfix)
 
   ## Formatter needs to be re-generated
   create_formatter(mrg)

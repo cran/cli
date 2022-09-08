@@ -33,6 +33,7 @@ static const R_CallMethodDef callMethods[]  = {
   CLEANCALL_METHOD_RECORD,
 
   { "clic_diff_chr",       (DL_FUNC) clic_diff_chr,       3 },
+  { "clic_getppid",        (DL_FUNC) clic_getppid,        0 },
   { "clic_md5",            (DL_FUNC) clic_md5,            1 },
   { "clic_md5_raw",        (DL_FUNC) clic_md5_raw,        1 },
   { "clic_sha256",         (DL_FUNC) clic_sha256,         1 },
@@ -70,6 +71,11 @@ static const R_CallMethodDef callMethods[]  = {
 
   { "clic_get_embedded_utf8", (DL_FUNC) clic_get_embedded_utf8, 0 },
   { "clic_set_embedded_utf8", (DL_FUNC) clic_set_embedded_utf8, 1 },
+
+  { "glue_",               (DL_FUNC) glue_,               5 },
+  { "trim_",               (DL_FUNC) trim_,               1 },
+
+  { "clic_vt_output",      (DL_FUNC) clic_vt_output,      3 },
 
   { NULL, NULL, 0 }
 };
