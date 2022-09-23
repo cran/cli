@@ -239,7 +239,7 @@ clii__inline <- function(app, text, .list) {
 
 inline_regex <- function() "(?s)^[.]([-[:alnum:]_]+)[[:space:]]+(.*)"
 
-make_cmd_transformer <- function(values) {
+make_cmd_transformer <- function(values, .call = NULL) {
   values$marker <- random_id()
   values$qty <- NA_integer_
   values$num_subst <- 0L
@@ -257,33 +257,33 @@ make_cmd_transformer <- function(values) {
     ".sym_flip(bool_word)", ".sym_flip(bool_topic)", ".sym_flip(bool_wsi)"
   )
 
+  # it is not easy to do better than this, we would need to pass a call
+  # down from the exported functions
+
+  caller <- .call %||% sys.call(-1)
   function(code, envir) {
-    res <- tryCatch({
-      if (substr(code, 1, 1) == "." &&
-          ! code %in% exceptions) {
-        stop("style")
-      }
-      expr <- parse(text = code, keep.source = FALSE)
-      eval(expr, envir = list("?" = function(...) stop()), enclos = envir)
-    }, error = function(e) e)
+    first_char <- substr(code, 1, 1)
 
-    if (!inherits(res, "error")) {
-      id <- paste0("v", length(values))
-      values[[id]] <- res
-      values$qty <- if (length(res) == 0) 0 else res
-      values$num_subst <- values$num_subst + 1L
-      return(paste0("<", values$marker, id, values$marker, ">"))
-    }
+    # {?} pluralization
+    if (first_char == "?") {
+      parse_plural(code, values)
 
-    # plurals
-    if (substr(code, 1, 1) == "?") {
-      return(parse_plural(code, values))
-
-    } else {
-      # inline styles
+    # {.} cli style
+    } else if (first_char == "." && ! code %in% exceptions) {
       m <- regexpr(inline_regex(), code, perl = TRUE)
       has_match <- m != -1
-      if (!has_match) stop(res)
+      if (!has_match) {
+        throw(cli_error(
+          call. = caller,
+          "Invalid cli literal: {.code {{{abbrev(code, 10)}}}} starts with a dot.",
+          "i" = "Interpreted literals must not start with a dot in cli >= 3.4.0.",
+          "i" = paste("{.code {{}}} expressions starting with a dot are",
+                      "now only used for cli styles."),
+          "i" = paste("To avoid this error, put a space character after",
+                      "the starting {.code {'{'}} or use parentheses:",
+                      "{.code {{({abbrev(code, 10)})}}}.")
+        ))
+      }
 
       starts <- attr(m, "capture.start")
       ends <- starts + attr(m, "capture.length") - 1L
@@ -298,14 +298,35 @@ make_cmd_transformer <- function(values) {
         .cli = TRUE
       )
       paste0("<", values$marker, ".", funname, " ", out, values$marker, ">")
+
+    # {} plain substitution
+    } else {
+      expr <- parse(text = code, keep.source = FALSE) %??%
+        cli_error(
+          call. = caller,
+          "Could not parse cli {.code {{}}} expression:
+           {.code {abbrev(code, 20)}}."
+        )
+      res <- eval(expr, envir = envir) %??%
+        cli_error(
+          call. = caller,
+          "Could not evaluate cli {.code {{}}} expression:
+           {.code {abbrev(code, 20)}}."
+        )
+
+      id <- paste0("v", length(values))
+      values[[id]] <- res
+      values$qty <- if (length(res) == 0) 0 else res
+      values$num_subst <- values$num_subst + 1L
+      paste0("<", values$marker, id, values$marker, ">")
     }
   }
 }
 
-glue_cmd <- function(..., .envir) {
+glue_cmd <- function(..., .envir, .call = sys.call(-1)) {
   str <- paste0(unlist(list(...), use.names = FALSE), collapse = "")
   values <- new.env(parent = emptyenv())
-  transformer <- make_cmd_transformer(values)
+  transformer <- make_cmd_transformer(values, .call = .call)
   pstr <- glue(
     str,
     .envir = .envir,
