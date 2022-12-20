@@ -47,6 +47,9 @@ int cli__start_thread(SEXP ticktime, SEXP speedtime) {
   cli__tick_ts.tv_nsec = (cticktime % 1000) * 1000 * 1000;
   int ret = 0;
 
+#ifdef __EMSCRIPTEN__
+  cli__reset = 0;
+#else
   if (! getenv("CLI_NO_THREAD")) {
     ret = pthread_create(
       & tick_thread,
@@ -63,6 +66,7 @@ int cli__start_thread(SEXP ticktime, SEXP speedtime) {
   } else {
     cli__reset = 0;
   }
+#endif
 
   return ret;
 }
@@ -77,7 +81,7 @@ SEXP clic_start_thread(SEXP pkg, SEXP ticktime, SEXP speedtime) {
   return R_NilValue;
 }
 
-int cli__kill_thread() {
+int cli__kill_thread(void) {
 
   int ret = 0;
 
@@ -115,7 +119,7 @@ int cli__kill_thread() {
   #define __has_feature(x) 0
 #endif
 
-SEXP clic_stop_thread() {
+SEXP clic_stop_thread(void) {
   if (unloaded) return R_NilValue;
   int ret = 1;
 #if defined(__clang__) && defined(__has_feature)
@@ -136,7 +140,7 @@ SEXP clic_stop_thread() {
   return R_NilValue;
 }
 
-SEXP clic_tick_reset() {
+SEXP clic_tick_reset(void) {
   if (cli__reset) {
     cli__timer_flag = 0;
   }

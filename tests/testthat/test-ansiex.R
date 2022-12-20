@@ -468,7 +468,11 @@ test_that("ansi_strwrap simple", {
 test_that("ansi_strwrap simple styled", {
   cases = list(
     list(col_red("foo"), col_red("foo")),
-    list(col_red(c("foo", "bar")), col_red(c("foo", "bar")))
+    list(col_red(c("foo", "bar")), col_red(c("foo", "bar"))),
+    list(
+      paste0("foo", bg_red("   "), "bar"),
+      paste0("foo", bg_red(" "), "bar")
+    )
   )
 
   for (case in cases) {
@@ -550,6 +554,30 @@ test_that_cli(configs = c("plain", "ansi"), "ansi_strtrim", {
   )
 
   for (case in cases) expect_equal(ansi_strtrim(case[[1]], 10), case[[2]])
+})
+
+test_that("ansi_strtrim with zero-length ellipsis", {
+  expect_snapshot({
+    ansi_strtrim("12345", 1, ellipsis = "")
+    ansi_strtrim("12345", 3, ellipsis = "")
+    ansi_strtrim("12345", 5, ellipsis = "")
+  })
+})
+
+test_that("ansi_strtrim errors", {
+  expect_snapshot(
+    error = TRUE,
+    ansi_strtrim("foobar", -1)
+  )
+})
+
+test_that("ansi_strtrim edge cases", {
+  expect_snapshot({
+    ansi_strtrim("foobar", width = 3, ellipsis = "...")
+    ansi_strtrim("foobar", width = 2, ellipsis = "...")
+    ansi_strtrim("foobar", width = 1, ellipsis = "...")
+    ansi_strtrim("foobar", width = 0, ellipsis = "...")
+  })
 })
 
 test_that("ansi_columns", {

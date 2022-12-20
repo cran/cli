@@ -1,3 +1,21 @@
+# cli 3.5.0
+
+* New `keypress()` function to read a single key press from a terminal.
+
+* New function `pretty_print_code()` to print function objects with syntax
+  highlighting at the R console.
+
+* `col_*` and `bg_*` functions how handle zero-length input correctly (#532).
+
+* New function `ansi_collapse()` to collapse character vectors into a single
+  string.
+
+* `ansi_strtrim()` now handles some edge cases better, when `ellipsis` has
+  length zero, and when it is wider than `width`.
+
+* New `hash_file_md5()` function to calculate the MD5 hash of one or more
+  files.
+
 # cli 3.4.1
 
 * cli has better error messages now.
