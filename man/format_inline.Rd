@@ -4,7 +4,12 @@
 \alias{format_inline}
 \title{Format and returns a line of text}
 \usage{
-format_inline(..., .envir = parent.frame(), collapse = TRUE)
+format_inline(
+  ...,
+  .envir = parent.frame(),
+  collapse = TRUE,
+  keep_whitespace = TRUE
+)
 }
 \arguments{
 \item{...}{Passed to \code{\link[=cli_text]{cli_text()}}.}
@@ -13,6 +18,9 @@ format_inline(..., .envir = parent.frame(), collapse = TRUE)
 
 \item{collapse}{Whether to collapse the result if it has multiple
 lines, e.g. because of \verb{\\f} characters.}
+
+\item{keep_whitespace}{Whether to keep all whitepace (spaces, newlines
+and form feeds) as is in the input.}
 }
 \value{
 Character scalar, the formatted string.

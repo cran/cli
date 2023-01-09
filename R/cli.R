@@ -102,17 +102,21 @@ cli_fmt <- function(expr, collapse = FALSE, strip_newline = FALSE) {
 #' @param .envir Environment to evaluate the expressions in.
 #' @param collapse Whether to collapse the result if it has multiple
 #'   lines, e.g. because of `\f` characters.
+#' @param keep_whitespace Whether to keep all whitepace (spaces, newlines
+#'   and form feeds) as is in the input.
 #' @return Character scalar, the formatted string.
 #'
 #' @export
 #' @examples
 #' format_inline("A message for {.emph later}, thanks {.fn format_inline}.")
 
-format_inline <- function(..., .envir = parent.frame(), collapse = TRUE) {
+format_inline <- function(..., .envir = parent.frame(), collapse = TRUE,
+                          keep_whitespace = TRUE) {
   opts <- options(cli.width = Inf)
   on.exit(options(opts), add = TRUE)
+  fun <- if (keep_whitespace) cli_inline else cli_text
   cli_fmt(
-    cli_text(..., .envir = .envir),
+    fun(..., .envir = .envir),
     collapse = collapse,
     strip_newline = TRUE
   )
@@ -199,6 +203,15 @@ format_inline <- function(..., .envir = parent.frame(), collapse = TRUE) {
 
 cli_text <- function(..., .envir = parent.frame()) {
   cli__message("text", list(text = glue_cmd(..., .envir = .envir, .call = sys.call())))
+}
+
+cli_inline <- function(..., .envir = parent.frame()) {
+  cli__message(
+    "inline_text",
+    list(
+      text = glue_cmd(..., .envir = .envir, .call = sys.call(), .trim = FALSE)
+    )
+  )
 }
 
 #' CLI verbatim text
