@@ -1,6 +1,6 @@
 Package: cli
 Title: Helpers for Developing Command Line Interfaces
-Version: 3.6.0
+Version: 3.6.1
 Authors@R: c(
     person("Gábor", "Csárdi", , "csardi.gabor@gmail.com", role = c("aut", "cre")),
     person("Hadley", "Wickham", role = "ctb"),
@@ -29,11 +29,11 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 RoxygenNote: 7.2.1.9000
 NeedsCompilation: yes
-Packaged: 2023-01-09 13:06:17 UTC; gaborcsardi
+Packaged: 2023-03-22 13:59:32 UTC; gaborcsardi
 Author: Gábor Csárdi [aut, cre],
   Hadley Wickham [ctb],
   Kirill Müller [ctb],
   RStudio [cph, fnd]
 Maintainer: Gábor Csárdi <csardi.gabor@gmail.com>
 Repository: CRAN
-Date/Publication: 2023-01-09 14:40:02 UTC
+Date/Publication: 2023-03-23 12:52:05 UTC
