@@ -45,6 +45,12 @@ Install the stable version from CRAN:
 install.packages("cli")
 ```
 
+Install the development version from GitHub:
+
+``` r
+pak::pak("r-lib/cli")
+```
+
 # Short tour
 
 Some of the more commonly used cli elements, and features.
@@ -228,4 +234,4 @@ contributing to this project, you agree to abide by its terms.
 
 # License
 
-MIT © RStudio
+MIT © Posit Software, PBC

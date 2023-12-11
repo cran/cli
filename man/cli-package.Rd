@@ -3,7 +3,6 @@
 \docType{package}
 \name{cli-package}
 \alias{cli-package}
-\alias{_PACKAGE}
 \title{cli: Helpers for Developing Command Line Interfaces}
 \description{
 A suite of tools to build attractive command line interfaces ('CLIs'), from semantic elements: headings, lists, alerts, paragraphs, etc. Supports custom themes via a 'CSS'-like language. It also contains a number of lower level 'CLI' elements: rules, boxes, trees, and 'Unicode' symbols with 'ASCII' alternatives. It support ANSI colors and text styles as well.
@@ -12,7 +11,7 @@ A suite of tools to build attractive command line interfaces ('CLIs'), from sema
 Useful links:
 \itemize{
   \item \url{https://cli.r-lib.org}
-  \item \url{https://github.com/r-lib/cli#readme}
+  \item \url{https://github.com/r-lib/cli}
   \item Report bugs at \url{https://github.com/r-lib/cli/issues}
 }
 
@@ -24,7 +23,8 @@ Other contributors:
 \itemize{
   \item Hadley Wickham [contributor]
   \item Kirill Müller [contributor]
-  \item RStudio [copyright holder, funder]
+  \item Salim Brüggemann \email{salim-b@pm.me} (\href{https://orcid.org/0000-0002-5329-5987}{ORCID}) [contributor]
+  \item Posit Software, PBC [copyright holder, funder]
 }
 
 }
